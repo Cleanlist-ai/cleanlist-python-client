@@ -3,7 +3,7 @@
 Official Python client for the **[Cleanlist AI](https://cleanlist.ai) API (v2)** — B2B lead
 discovery, waterfall enrichment, lead lists, smart agents, and export.
 
-The package ships **both a synchronous and an asynchronous client** generated from the
+The package ships **both a standard and an asynchronous client** generated from the
 public v2 OpenAPI schema, plus a small `Cleanlist` convenience facade so you can get
 productive in a few lines.
 
@@ -17,7 +17,7 @@ with Cleanlist(access_token="clapi_live_...") as cl:
 ```
 
 - ✅ Fully typed (Pydantic v2 models for every request & response)
-- ✅ Sync (`cleanlist_ai`) **and** async (`cleanlist_ai.aio`) — same method names
+- ✅ Standard (`cleanlist_ai`) **and** async (`cleanlist_ai.aio`) — same method names
 - ✅ Bearer-token auth, sensible production defaults
 - ✅ Generated from the same schema the API serves, so it never drifts
 
@@ -27,7 +27,7 @@ with Cleanlist(access_token="clapi_live_...") as cl:
 
 - [Installation](#installation)
 - [Authentication](#authentication)
-- [Quickstart (sync)](#quickstart-sync)
+- [Quickstart (standard)](#quickstart-standard)
 - [Quickstart (async)](#quickstart-async)
 - [Configuration](#configuration)
 - [Core concepts](#core-concepts)
@@ -53,14 +53,14 @@ with Cleanlist(access_token="clapi_live_...") as cl:
 pip install cleanlist-ai
 ```
 
-Requires Python 3.8+. Installing pulls in both the sync (`urllib3`) and async
+Requires Python 3.8+. Installing pulls in both the standard (`urllib3`) and async
 (`aiohttp`) runtimes, so both clients work out of the box.
 
 ## Authentication
 
 Every request is authenticated with a **Cleanlist API key**, sent as an
 `Authorization: Bearer <key>` header. Create one in the portal under
-**[Settings → API Keys](https://app.cleanlist.ai/settings/api-keys)** (keys look like
+**[Settings → API Keys](https://app.cleanlist.ai/api-keys)** (keys look like
 `clapi_live_...`).
 
 Pass it explicitly, or set the `CLEANLIST_API_KEY` environment variable and let the
@@ -80,7 +80,7 @@ export CLEANLIST_API_KEY="clapi_live_..."
 > **Keep keys secret.** Never commit them. Prefer environment variables or a secrets
 > manager over hard-coding.
 
-## Quickstart (sync)
+## Quickstart (standard)
 
 ```python
 from cleanlist_ai import Cleanlist
@@ -154,7 +154,7 @@ For finer control, build a `Configuration` yourself:
 from cleanlist_ai import Cleanlist, Configuration
 
 config = Configuration(host="https://api.cleanlist.ai", access_token="clapi_live_...")
-config.retries = 3            # urllib3 retry count (sync)
+config.retries = 3            # urllib3 retry count (standard)
 cl = Cleanlist(configuration=config)
 ```
 
@@ -219,7 +219,7 @@ while True:
 print("charged:", s.credits_charged, "refunded:", s.credits_refunded)
 ```
 
-See [`examples/`](examples/) for a complete, runnable polling helper (sync & async).
+See [`examples/`](examples/) for a complete, runnable polling helper (standard & async).
 
 ---
 
@@ -227,7 +227,7 @@ See [`examples/`](examples/) for a complete, runnable polling helper (sync & asy
 
 The v2 surface is 24 operations across five resource groups, exposed on the `Cleanlist`
 facade as `cl.workspace`, `cl.lead_lists`, `cl.enrichment`, `cl.smart_agents`, and
-`cl.export`. All examples below are synchronous; prepend `await` (and import from
+`cl.export`. All examples below use the standard client; prepend `await` (and import from
 `cleanlist_ai.aio…`) for async.
 
 Auto-generated, field-by-field docs for every model live in
@@ -432,12 +432,12 @@ PYTHON=python3 bash scripts/generate.sh
 ```
 
 `scripts/generate.sh` cleans the operation ids into readable method names
-(`scripts/prepare_spec.py`), generates the sync + async clients, and re-applies the
+(`scripts/prepare_spec.py`), generates the standard + async clients, and re-applies the
 `Cleanlist` facade overlay.
 
 ## Support
 
-- Interactive API docs (Swagger): <https://api.cleanlist.ai/docs>
+- Interactive API docs (OpenAPI): <https://api.cleanlist.ai/docs>
 - Docs & guides: <https://docs.cleanlist.ai>
 - Dashboard: <https://app.cleanlist.ai>
 - Email: [sal@cleanlist.ai](mailto:sal@cleanlist.ai)
