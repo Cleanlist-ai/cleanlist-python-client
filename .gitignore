@@ -1,0 +1,25 @@
+# Build / generation artifacts
+.build/
+dist/
+build/
+*.egg-info/
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

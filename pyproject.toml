@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cleanlist-ai"
+version = "2.0.0"
+description = "Official Python SDK for the Cleanlist API (v2) — B2B lead discovery, enrichment, lists, smart agents, and export."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "Cleanlist", email = "sal@cleanlist.ai" }]
+keywords = [
+  "cleanlist",
+  "b2b",
+  "leads",
+  "enrichment",
+  "sales",
+  "prospecting",
+  "api",
+  "sdk",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+
+# Both the synchronous (urllib3) and asynchronous (aiohttp) clients ship in this
+# single distribution, so both dependency sets are installed by default and
+# `pip install cleanlist-ai` gives you a working sync AND async client.
+dependencies = [
+  "urllib3>=2.1.0,<3.0.0",
+  "python-dateutil>=2.8.2",
+  "pydantic>=2",
+  "typing-extensions>=4.7.1",
+  "aiohttp>=3.9.0",
+  "aiohttp-retry>=2.8.3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-asyncio>=0.23",
+  "build>=1.2",
+  "twine>=5.0",
+]
+
+[project.urls]
+Homepage = "https://cleanlist.ai"
+Documentation = "https://github.com/Cleanlist-ai/cleanlist-python-client#readme"
+Repository = "https://github.com/Cleanlist-ai/cleanlist-python-client"
+"Bug Tracker" = "https://github.com/Cleanlist-ai/cleanlist-python-client/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cleanlist_ai"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "cleanlist_ai",
+  "openapi",
+  "scripts",
+  "examples",
+  "README.md",
+  "LICENSE",
+]
