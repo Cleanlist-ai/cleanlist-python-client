@@ -27,7 +27,7 @@ class SmartAgentResultRow(BaseModel):
     SmartAgentResultRow
     """ # noqa: E501
     lead_id: StrictStr = Field(description="UUID of the lead this result row belongs to.")
-    value: Optional[Any] = Field(default=None, description="The agent's output for this lead (usually a string; shape depends on the agent type). Null when the row failed or hasn't been processed yet.")
+    value: Optional[Any] = None
     error: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["lead_id", "value", "error"]
@@ -73,9 +73,6 @@ class SmartAgentResultRow(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of value
-        if self.value:
-            _dict['value'] = self.value.to_dict()
         # puts key-value pairs in additional_properties in the top level
         if self.additional_properties is not None:
             for _key, _value in self.additional_properties.items():
@@ -104,7 +101,7 @@ class SmartAgentResultRow(BaseModel):
 
         _obj = cls.model_validate({
             "lead_id": obj.get("lead_id"),
-            "value": AnyOf.from_dict(obj["value"]) if obj.get("value") is not None else None,
+            "value": obj.get("value"),
             "error": obj.get("error")
         })
         # store additional fields in additional_properties

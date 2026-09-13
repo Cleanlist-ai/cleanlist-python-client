@@ -32,6 +32,33 @@ def clean_operation_id(operation_id: str) -> str:
     return name
 
 
+def collapse_freeform_anyof(node) -> int:
+    """Collapse ``anyOf`` schemas that contain the empty (free-form) schema.
+
+    Pydantic emits free-form nullable fields as ``{"anyOf": [{}, {"type":
+    "null"}]}``. The empty ``{}`` branch already matches *anything* (including
+    null), so the whole ``anyOf`` is equivalent to a plain free-form schema.
+    Some generators (notably typescript-fetch 7.x) mis-handle that shape and
+    emit references to undefined ``FromJSON``/``ToJSON`` helpers. Dropping the
+    redundant ``anyOf`` (while keeping title/description/examples) is
+    semantically identical and generates cleanly as ``any``/``object``.
+
+    Recurses through the whole document; returns the number of collapses.
+    """
+    count = 0
+    if isinstance(node, dict):
+        any_of = node.get("anyOf")
+        if isinstance(any_of, list) and any(branch == {} for branch in any_of):
+            node.pop("anyOf", None)
+            count += 1
+        for value in node.values():
+            count += collapse_freeform_anyof(value)
+    elif isinstance(node, list):
+        for value in node:
+            count += collapse_freeform_anyof(value)
+    return count
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(__doc__)
@@ -57,9 +84,14 @@ def main() -> int:
             seen[cleaned] = original
             operation["operationId"] = cleaned
 
+    collapsed = collapse_freeform_anyof(spec)
+
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(json.dumps(spec, indent=2))
-    print(f"Prepared spec with {len(seen)} cleaned operationIds -> {dst}")
+    print(
+        f"Prepared spec: {len(seen)} cleaned operationIds, "
+        f"{collapsed} free-form anyOf collapsed -> {dst}"
+    )
     return 0
 
 

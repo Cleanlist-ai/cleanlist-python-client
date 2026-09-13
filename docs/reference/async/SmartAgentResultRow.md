@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **lead_id** | **str** | UUID of the lead this result row belongs to. | 
-**value** | [**AnyOf**](AnyOf.md) | The agent&#39;s output for this lead (usually a string; shape depends on the agent type). Null when the row failed or hasn&#39;t been processed yet. | [optional] 
+**value** | **object** |  | [optional] 
 **error** | **str** |  | [optional] 
 
 ## Example
