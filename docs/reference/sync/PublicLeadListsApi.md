@@ -8,6 +8,8 @@ Method | HTTP request | Description
 [**create_list**](PublicLeadListsApi.md#create_list) | **POST** /api/v2/lead-lists | Create a lead list
 [**csv_import**](PublicLeadListsApi.md#csv_import) | **POST** /api/v2/lead-lists/{list_id}/csv-import | Import leads from CSV
 [**delete_list**](PublicLeadListsApi.md#delete_list) | **DELETE** /api/v2/lead-lists/{list_id} | Delete a lead list
+[**find_people**](PublicLeadListsApi.md#find_people) | **POST** /api/v2/lead-lists/{list_id}/find-people | Find people at companies already in a list and import them (async)
+[**find_people_status**](PublicLeadListsApi.md#find_people_status) | **GET** /api/v2/lead-lists/{list_id}/find-people/status/{workflow_id} | Poll a find-people job
 [**get_list**](PublicLeadListsApi.md#get_list) | **GET** /api/v2/lead-lists/{list_id} | Get a lead list
 [**list_leads_in_list**](PublicLeadListsApi.md#list_leads_in_list) | **GET** /api/v2/lead-lists/{list_id}/leads | List leads in a list
 [**list_lists**](PublicLeadListsApi.md#list_lists) | **GET** /api/v2/lead-lists | List lead lists
@@ -110,7 +112,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -204,7 +214,16 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**200** | Existing same-name list reused (idempotent); &#x60;reused&#x60; is true. |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -320,7 +339,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -416,7 +443,203 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **find_people**
+> FindPeopleResponse find_people(list_id, find_people_request)
+
+Find people at companies already in a list and import them (async)
+
+Start an async job that finds people at the given companies (which must
+already belong to ``list_id``) and imports them into that list.
+
+Returns a ``workflow_id`` immediately; poll ``poll_url``
+(GET /lead-lists/{list_id}/find-people/status/{workflow_id}) until ``status``
+is terminal. Discovery is free; imports bill the standard per-new-lead cost.
+
+### Example
+
+* Bearer Authentication (HTTPBearer):
+
+```python
+import cleanlist_ai
+from cleanlist_ai.models.find_people_request import FindPeopleRequest
+from cleanlist_ai.models.find_people_response import FindPeopleResponse
+from cleanlist_ai.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://api.cleanlist.ai
+# See configuration.py for a list of all supported configuration parameters.
+configuration = cleanlist_ai.Configuration(
+    host = "https://api.cleanlist.ai"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: HTTPBearer
+configuration = cleanlist_ai.Configuration(
+    access_token = os.environ["BEARER_TOKEN"]
+)
+
+# Enter a context with an instance of the API client
+with cleanlist_ai.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = cleanlist_ai.PublicLeadListsApi(api_client)
+    list_id = 'list_id_example' # str | 
+    find_people_request = cleanlist_ai.FindPeopleRequest() # FindPeopleRequest | 
+
+    try:
+        # Find people at companies already in a list and import them (async)
+        api_response = api_instance.find_people(list_id, find_people_request)
+        print("The response of PublicLeadListsApi->find_people:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PublicLeadListsApi->find_people: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **list_id** | **str**|  | 
+ **find_people_request** | [**FindPeopleRequest**](FindPeopleRequest.md)|  | 
+
+### Return type
+
+[**FindPeopleResponse**](FindPeopleResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **find_people_status**
+> FindPeopleStatusResponse find_people_status(list_id, workflow_id)
+
+Poll a find-people job
+
+Poll a find-people job started by
+``POST /lead-lists/{list_id}/find-people``. Free and idempotent — call until
+``status`` is terminal (``completed`` / ``failed`` / ``cancelled``).
+Cross-tenant workflow ids fail closed as 404. ``list_id`` is for path nesting;
+the lookup is by ``workflow_id`` + org.
+
+### Example
+
+* Bearer Authentication (HTTPBearer):
+
+```python
+import cleanlist_ai
+from cleanlist_ai.models.find_people_status_response import FindPeopleStatusResponse
+from cleanlist_ai.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://api.cleanlist.ai
+# See configuration.py for a list of all supported configuration parameters.
+configuration = cleanlist_ai.Configuration(
+    host = "https://api.cleanlist.ai"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: HTTPBearer
+configuration = cleanlist_ai.Configuration(
+    access_token = os.environ["BEARER_TOKEN"]
+)
+
+# Enter a context with an instance of the API client
+with cleanlist_ai.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = cleanlist_ai.PublicLeadListsApi(api_client)
+    list_id = 'list_id_example' # str | 
+    workflow_id = 'workflow_id_example' # str | 
+
+    try:
+        # Poll a find-people job
+        api_response = api_instance.find_people_status(list_id, workflow_id)
+        print("The response of PublicLeadListsApi->find_people_status:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PublicLeadListsApi->find_people_status: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **list_id** | **str**|  | 
+ **workflow_id** | **str**|  | 
+
+### Return type
+
+[**FindPeopleStatusResponse**](FindPeopleStatusResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -506,7 +729,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -600,7 +831,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -691,7 +930,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -783,7 +1030,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -876,7 +1131,15 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Successful Response |  -  |
-**422** | Validation Error |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

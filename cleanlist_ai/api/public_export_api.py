@@ -96,7 +96,15 @@ class PublicExportApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ExportCsvResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -164,7 +172,15 @@ class PublicExportApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ExportCsvResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -232,7 +248,15 @@ class PublicExportApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ExportCsvResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -385,7 +409,15 @@ class PublicExportApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ExportJsonResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -465,7 +497,15 @@ class PublicExportApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ExportJsonResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -545,7 +585,15 @@ class PublicExportApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ExportJsonResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,

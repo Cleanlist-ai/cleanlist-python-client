@@ -30,13 +30,14 @@ class RunSmartAgentRequest(BaseModel):
     list_id: StrictStr = Field(description="UUID of the lead list the agent runs against. Must be a list this API key can access (owned, org-visible, or shared) — a known id for a private list in the same org is rejected with 404.")
     agent_type: Optional[StrictStr] = Field(default='custom_ai', description="Which agent to run. `custom_ai` runs your own `prompt`; `cold_intro_email` drafts a personalized opener from an email template. The preset research agents (`title_normalizer`, `company_intel`, `pain_point_hypothesis`) run a baked-in instruction and ignore `prompt`. All types execute asynchronously as an AI smart column.")
     prompt: Optional[StrictStr] = None
-    column_name: Annotated[str, Field(min_length=1, strict=True, max_length=100)] = Field(description="Display name for the new column that stores each lead's agent output. Re-using an existing column name appends to it unless `overwrite=true` is set.")
-    lead_scope: Optional[StrictStr] = Field(default='subset', description="`subset` runs on up to `max_rows` leads (the fast, cheap path). `all` runs on the entire list, but any `all` run above the configured threshold (default 500 leads) is blocked with a 400 `approval_required` until you narrow scope or route a human approval.")
+    column_name: Annotated[str, Field(min_length=1, strict=True, max_length=100)] = Field(description="Display name for the new column that stores each lead's agent output for custom/preset agents. Existing completed outputs are preserved unless `overwrite=true` is quoted. Cold intro email uses the platform's built-in email column.")
+    template_id: Optional[StrictStr] = None
+    lead_scope: Optional[StrictStr] = Field(default='subset', description="`subset` runs on up to `max_rows` leads (the fast, cheap path). `all` selects the entire list. Any selection above the configured threshold (default 500 leads) is blocked with a 400 `approval_required` until you narrow scope or route a human approval.")
     max_rows: Optional[Annotated[int, Field(le=10000, strict=True, ge=1)]] = Field(default=100, description="Upper bound on how many leads to process when `lead_scope='subset'`. Clamped to the list size. Ignored when `lead_scope='all'`.")
     quote_id: StrictStr = Field(description="Single-use spend quote from POST /credits/estimate, signed for this exact request shape (list_id + agent_type + column_name + row count). It is verified and atomically redeemed before the run starts; a stale, mismatched, or already-used quote returns a 400 or 409. Re-quote if you change any field.")
-    overwrite: Optional[StrictBool] = Field(default=False, description="When true, existing values in a column of the same name are overwritten instead of preserved. Passed through to the workflow via column metadata.")
+    overwrite: Optional[StrictBool] = Field(default=False, description="When true, existing values in a column of the same name are overwritten instead of preserved. Included in the signed quote and applied while resolving the exact eligible lead IDs.")
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["list_id", "agent_type", "prompt", "column_name", "lead_scope", "max_rows", "quote_id", "overwrite"]
+    __properties: ClassVar[List[str]] = ["list_id", "agent_type", "prompt", "column_name", "template_id", "lead_scope", "max_rows", "quote_id", "overwrite"]
 
     @field_validator('agent_type')
     def agent_type_validate_enum(cls, value):
@@ -109,6 +110,11 @@ class RunSmartAgentRequest(BaseModel):
         if self.prompt is None and "prompt" in self.model_fields_set:
             _dict['prompt'] = None
 
+        # set to None if template_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.template_id is None and "template_id" in self.model_fields_set:
+            _dict['template_id'] = None
+
         return _dict
 
     @classmethod
@@ -125,6 +131,7 @@ class RunSmartAgentRequest(BaseModel):
             "agent_type": obj.get("agent_type") if obj.get("agent_type") is not None else 'custom_ai',
             "prompt": obj.get("prompt"),
             "column_name": obj.get("column_name"),
+            "template_id": obj.get("template_id"),
             "lead_scope": obj.get("lead_scope") if obj.get("lead_scope") is not None else 'subset',
             "max_rows": obj.get("max_rows") if obj.get("max_rows") is not None else 100,
             "quote_id": obj.get("quote_id"),

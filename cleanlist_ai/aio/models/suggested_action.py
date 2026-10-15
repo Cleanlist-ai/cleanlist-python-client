@@ -17,25 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class EstimateCostResponse(BaseModel):
+class SuggestedAction(BaseModel):
     """
-    EstimateCostResponse
+    A follow-up suggestion the agent can present or call directly.
     """ # noqa: E501
-    quote_id: StrictStr = Field(description="HMAC-signed quote handle (`qte_<kid>_<issued_at>_<sig>`) that the paired paid tool must present at execution time. Single-use and bound to the canonical request (tool, list/filters, scope, row_count, org).")
-    expires_at: StrictInt = Field(description="Unix epoch SECONDS at which the quote expires (issue time + `CLEANLIST_QUOTE_TTL_SECONDS`, 5 min default). Re-estimate after this to obtain a fresh quote.")
-    estimated_cost: StrictInt = Field(description="Credits this operation will cost — the authoritative signed spend cap. Execution rejects (`spend_cap_exceeded`) if the recomputed cost would exceed it.")
-    tool: StrictStr = Field(description="Echo of the priced tool.")
-    row_count: StrictInt = Field(description="Number of rows/entities the estimate priced — derived from the list or cohort when applicable, not the caller's raw input.")
-    filter_hash: StrictStr = Field(description="Stable digest of the canonical filter/list/cohort shape bound into the quote signature; `none` when there is no filter object.")
-    available_credits: StrictInt = Field(description="The organization's current credit balance at estimate time.")
-    sufficient: StrictBool = Field(description="True when `available_credits >= estimated_cost`. False signals the org must top up at billing before the operation can run.")
+    label: StrictStr
+    tool: Optional[StrictStr] = None
+    arguments: Optional[Dict[str, Any]] = None
+    url: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["quote_id", "expires_at", "estimated_cost", "tool", "row_count", "filter_hash", "available_credits", "sufficient"]
+    __properties: ClassVar[List[str]] = ["label", "tool", "arguments", "url"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -55,7 +51,7 @@ class EstimateCostResponse(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of EstimateCostResponse from a JSON string"""
+        """Create an instance of SuggestedAction from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -83,11 +79,26 @@ class EstimateCostResponse(BaseModel):
             for _key, _value in self.additional_properties.items():
                 _dict[_key] = _value
 
+        # set to None if tool (nullable) is None
+        # and model_fields_set contains the field
+        if self.tool is None and "tool" in self.model_fields_set:
+            _dict['tool'] = None
+
+        # set to None if arguments (nullable) is None
+        # and model_fields_set contains the field
+        if self.arguments is None and "arguments" in self.model_fields_set:
+            _dict['arguments'] = None
+
+        # set to None if url (nullable) is None
+        # and model_fields_set contains the field
+        if self.url is None and "url" in self.model_fields_set:
+            _dict['url'] = None
+
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of EstimateCostResponse from a dict"""
+        """Create an instance of SuggestedAction from a dict"""
         if obj is None:
             return None
 
@@ -95,14 +106,10 @@ class EstimateCostResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "quote_id": obj.get("quote_id"),
-            "expires_at": obj.get("expires_at"),
-            "estimated_cost": obj.get("estimated_cost"),
+            "label": obj.get("label"),
             "tool": obj.get("tool"),
-            "row_count": obj.get("row_count"),
-            "filter_hash": obj.get("filter_hash"),
-            "available_credits": obj.get("available_credits"),
-            "sufficient": obj.get("sufficient")
+            "arguments": obj.get("arguments"),
+            "url": obj.get("url")
         })
         # store additional fields in additional_properties
         for _key in obj.keys():

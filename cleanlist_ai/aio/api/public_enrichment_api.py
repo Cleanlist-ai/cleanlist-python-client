@@ -100,7 +100,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichByTaskResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -168,7 +176,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichByTaskResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -236,7 +252,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichByTaskResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -377,7 +401,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichCompanyResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -445,7 +477,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichCompanyResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -513,7 +553,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichCompanyResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -654,7 +702,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichListResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -722,7 +778,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichListResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -790,7 +854,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichListResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -931,7 +1003,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichPersonResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -999,7 +1079,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichPersonResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1067,7 +1155,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "EnrichPersonResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1208,7 +1304,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "WorkflowStatusResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1276,7 +1380,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "WorkflowStatusResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,
@@ -1344,7 +1456,15 @@ class PublicEnrichmentApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "WorkflowStatusResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = await self.api_client.call_api(
             *_param,

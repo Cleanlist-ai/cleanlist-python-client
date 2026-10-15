@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **usage** | **str** |  | [optional] 
 **message** | **str** |  | [optional] 
 **entity_kind** | **str** | Resolved entity type of the task. &#39;person&#39; → async workflow; &#39;company&#39; → synchronous inline results. | 
+**list_id** | **str** |  | [optional] 
 **workflow_id** | **str** |  | [optional] 
 **status** | **str** | &#39;pending&#39; for person tasks (workflow running); &#39;completed&#39; for company tasks (results already attached). | 
 **total_entities** | **int** | Number of cohort entities dispatched for enrichment. | 

@@ -23,7 +23,7 @@ Name | Type | Description | Notes
 **refund_status** | **str** |  | [optional] 
 **refund_message** | **str** |  | [optional] 
 **result** | [**SingleEnrichmentResultRead**](SingleEnrichmentResultRead.md) |  | [optional] 
-**credits_charged** | **int** |  | [optional] 
+**credits_charged** | [**CreditsCharged**](CreditsCharged.md) |  | [optional] 
 **credits_refunded** | **int** |  | [optional] 
 
 ## Example

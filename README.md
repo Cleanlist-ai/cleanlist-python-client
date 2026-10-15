@@ -31,7 +31,7 @@ with Cleanlist(access_token="clapi_live_...") as cl:
 - [Quickstart (async)](#quickstart-async)
 - [Configuration](#configuration)
 - [Core concepts](#core-concepts)
-  - [Credits & the estimate → quote flow](#credits--the-estimate--quote-flow)
+  - [Credits & quotes](#credits--quotes)
   - [Enrichment is asynchronous — poll for results](#enrichment-is-asynchronous--poll-for-results)
 - [Endpoint reference](#endpoint-reference)
   - [Workspace](#workspace-clworkspace)
@@ -167,26 +167,21 @@ cl.workspace.whoami(_request_timeout=10)
 
 ## Core concepts
 
-### Credits & the estimate → quote flow
+### Credits & quotes
 
 Search and list management are free; **enrichment and smart-agent runs cost credits**.
 Bulk/paid operations (`enrich_list`, `run_smart_agent`, and CSV import with enrichment)
-require a **signed quote** obtained from `credits_estimate` first. The quote pins the
-price and is single-use:
+require a **signed, single-use `quote_id`** that pins the price. The pricing endpoint
+(`POST /api/v2/credits/estimate`) is not part of the public API spec, so this SDK has
+no method to request a quote; pass one you already have:
 
 ```python
-from cleanlist_ai.models import EstimateCostRequest, EnrichListRequest
+from cleanlist_ai.models import EnrichListRequest
 
-quote = cl.workspace.credits_estimate(
-    EstimateCostRequest(tool="enrich_list", list_id=lst.list_id, scope="full")
+run = cl.enrichment.enrich_list(
+    EnrichListRequest(list_id=lst.list_id, scope="full", quote_id=quote_id)
 )
-print(f"cost={quote.estimated_cost} sufficient={quote.sufficient} quote={quote.quote_id}")
-
-if quote.sufficient:
-    run = cl.enrichment.enrich_list(
-        EnrichListRequest(list_id=lst.list_id, scope="full", quote_id=quote.quote_id)
-    )
-    print("bulk workflow:", run.workflow_id)
+print("bulk workflow:", run.workflow_id)
 ```
 
 Enrichment **scopes** (what you pay for per lead):
@@ -241,7 +236,6 @@ Identity, credits, API keys, and usage.
 | --------------------------------------- | ------------------------------- | ------------------------------------------------------ |
 | `whoami()`                              | `GET /api/v2/whoami`            | Current identity, org, tier, scopes & feature grants.  |
 | `credits_balance()`                     | `GET /api/v2/credits/balance`   | Spendable credit balance for the org.                  |
-| `credits_estimate(EstimateCostRequest)` | `POST /api/v2/credits/estimate` | Price an operation and get a signed, single-use quote. |
 | `list_api_keys()`                       | `GET /api/v2/api-keys`          | List the org's API keys (metadata only).               |
 | `usage_report(days=…, group_by=…)`      | `GET /api/v2/usage`             | Credit-usage report over a window.                     |
 
@@ -250,10 +244,6 @@ me      = cl.workspace.whoami()
 balance = cl.workspace.credits_balance()
 keys    = cl.workspace.list_api_keys()
 usage   = cl.workspace.usage_report(days=30, group_by="tool")
-
-quote = cl.workspace.credits_estimate(
-    EstimateCostRequest(tool="enrich_person", scope="full", row_count=1)
-)
 ```
 
 ### Lead Lists (`cl.lead_lists`)
@@ -330,11 +320,8 @@ Run AI columns over a list (custom prompts, cold intros, preset research agents)
 | `get_smart_agent_results(smart_agent_task_id)` | `GET /api/v2/smart-agents/{smart_agent_task_id}` | Fetch a run's per-lead output.                        |
 
 ```python
-from cleanlist_ai.models import EstimateCostRequest, RunSmartAgentRequest
+from cleanlist_ai.models import RunSmartAgentRequest
 
-quote = cl.workspace.credits_estimate(
-    EstimateCostRequest(tool="run_smart_agent", list_id=lst.list_id, agent_type="custom_ai", row_count=50)
-)
 run = cl.smart_agents.run_smart_agent(
     RunSmartAgentRequest(
         list_id=lst.list_id,
@@ -342,7 +329,7 @@ run = cl.smart_agents.run_smart_agent(
         column_name="Personalized angle",
         prompt="In one sentence, suggest a cold-outreach angle for this lead.",
         max_rows=50,
-        quote_id=quote.quote_id,
+        quote_id=quote_id,  # signed quote for this exact request shape
     )
 )
 results = cl.smart_agents.get_smart_agent_results(run.smart_agent_task_id)
