@@ -42,6 +42,8 @@ from cleanlist_ai.aio.models.enrich_list_request import EnrichListRequest
 from cleanlist_ai.aio.models.enrich_list_response import EnrichListResponse
 from cleanlist_ai.aio.models.enrich_person_request import EnrichPersonRequest
 from cleanlist_ai.aio.models.enrich_person_response import EnrichPersonResponse
+from cleanlist_ai.aio.models.estimate_cost_request import EstimateCostRequest
+from cleanlist_ai.aio.models.estimate_cost_response import EstimateCostResponse
 from cleanlist_ai.aio.models.export_csv_request import ExportCsvRequest
 from cleanlist_ai.aio.models.export_csv_response import ExportCsvResponse
 from cleanlist_ai.aio.models.export_json_response import ExportJsonResponse

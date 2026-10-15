@@ -24,6 +24,7 @@ from cleanlist_ai.configuration import Configuration
 from cleanlist_ai.api.public_enrichment_api import PublicEnrichmentApi
 from cleanlist_ai.api.public_export_api import PublicExportApi
 from cleanlist_ai.api.public_lead_lists_api import PublicLeadListsApi
+from cleanlist_ai.api.public_people_finder_api import PublicPeopleFinderApi
 from cleanlist_ai.api.public_smart_agents_api import PublicSmartAgentsApi
 from cleanlist_ai.api.public_workspace_api import PublicWorkspaceApi
 
@@ -48,6 +49,7 @@ class Cleanlist:
     Resource groups:
         * :attr:`workspace`   – identity, credits, API keys, usage
         * :attr:`lead_lists`  – create/manage lists and their leads
+        * :attr:`people_finder` – search people by filters, find people at companies
         * :attr:`enrichment`  – person/company/bulk enrichment + status polling
         * :attr:`smart_agents`– run smart agents and fetch results
         * :attr:`export`      – CSV (signed URL) and JSON export
@@ -79,6 +81,7 @@ class Cleanlist:
 
         self.workspace = PublicWorkspaceApi(self.api_client)
         self.lead_lists = PublicLeadListsApi(self.api_client)
+        self.people_finder = PublicPeopleFinderApi(self.api_client)
         self.enrichment = PublicEnrichmentApi(self.api_client)
         self.smart_agents = PublicSmartAgentsApi(self.api_client)
         self.export = PublicExportApi(self.api_client)

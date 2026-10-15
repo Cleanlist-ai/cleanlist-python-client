@@ -21,12 +21,13 @@ export CLEANLIST_HOST="http://localhost:8000"
 | ---- | ------------- |
 | [`01_quickstart.py`](01_quickstart.py) | whoami, credit balance, create a list — the 60-second tour. |
 | [`02_enrich_person.py`](02_enrich_person.py) | Enrich a single contact and poll the workflow to completion. |
-| [`03_bulk_enrich_with_quote.py`](03_bulk_enrich_with_quote.py) | Redeem a quote to bulk-enrich a list (takes an existing `quote_id`). |
+| [`03_bulk_enrich_with_quote.py`](03_bulk_enrich_with_quote.py) | The estimate → quote → bulk-enrich credit flow. |
 | [`04_lead_lists_crud.py`](04_lead_lists_crud.py) | Full lead-list lifecycle: create, update, add/remove leads, paginate, delete. |
 | [`05_smart_agent.py`](05_smart_agent.py) | Run a custom AI smart-agent column over a list and read results. |
 | [`06_export.py`](06_export.py) | Export a list to CSV (signed URL) and stream it as JSON. |
 | [`07_async_quickstart.py`](07_async_quickstart.py) | The async client (`cleanlist_ai.aio`) end to end. |
 | [`08_error_handling.py`](08_error_handling.py) | Catching typed API exceptions. |
+| [`09_find_people.py`](09_find_people.py) | People Finder: filter values, compile preview, search + next page. Free. |
 
 Run any of them:
 
@@ -34,6 +35,5 @@ Run any of them:
 python examples/01_quickstart.py
 ```
 
-> ⚠️ Examples that enrich or run smart agents **spend credits**. Bulk enrich and smart
-> agents need a `quote_id` you already have: the pricing endpoint is not in the public
-> spec, so the SDK cannot request one. Read each script's header before running.
+> ⚠️ Examples that enrich or run smart agents **spend credits** (they estimate first and
+> print the cost). Read each script's header before running.

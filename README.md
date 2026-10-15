@@ -31,14 +31,16 @@ with Cleanlist(access_token="clapi_live_...") as cl:
 - [Quickstart (async)](#quickstart-async)
 - [Configuration](#configuration)
 - [Core concepts](#core-concepts)
-  - [Credits & quotes](#credits--quotes)
+  - [Credits & the estimate → quote flow](#credits--the-estimate--quote-flow)
   - [Enrichment is asynchronous — poll for results](#enrichment-is-asynchronous--poll-for-results)
 - [Endpoint reference](#endpoint-reference)
   - [Workspace](#workspace-clworkspace)
   - [Lead Lists](#lead-lists-cllead_lists)
+  - [People Finder](#people-finder-clpeople_finder)
   - [Enrichment](#enrichment-clenrichment)
   - [Smart Agents](#smart-agents-clsmart_agents)
   - [Export](#export-clexport)
+- [Examples](#examples)
 - [Error handling](#error-handling)
 - [Pagination](#pagination)
 - [Using the generated API classes directly](#using-the-generated-api-classes-directly)
@@ -167,21 +169,26 @@ cl.workspace.whoami(_request_timeout=10)
 
 ## Core concepts
 
-### Credits & quotes
+### Credits & the estimate → quote flow
 
 Search and list management are free; **enrichment and smart-agent runs cost credits**.
 Bulk/paid operations (`enrich_list`, `run_smart_agent`, and CSV import with enrichment)
-require a **signed, single-use `quote_id`** that pins the price. The pricing endpoint
-(`POST /api/v2/credits/estimate`) is not part of the public API spec, so this SDK has
-no method to request a quote; pass one you already have:
+require a **signed quote** obtained from `credits_estimate` first. The quote pins the
+price and is single-use:
 
 ```python
-from cleanlist_ai.models import EnrichListRequest
+from cleanlist_ai.models import EstimateCostRequest, EnrichListRequest
 
-run = cl.enrichment.enrich_list(
-    EnrichListRequest(list_id=lst.list_id, scope="full", quote_id=quote_id)
+quote = cl.workspace.credits_estimate(
+    EstimateCostRequest(tool="enrich_list", list_id=lst.list_id, scope="full")
 )
-print("bulk workflow:", run.workflow_id)
+print(f"cost={quote.estimated_cost} sufficient={quote.sufficient} quote={quote.quote_id}")
+
+if quote.sufficient:
+    run = cl.enrichment.enrich_list(
+        EnrichListRequest(list_id=lst.list_id, scope="full", quote_id=quote.quote_id)
+    )
+    print("bulk workflow:", run.workflow_id)
 ```
 
 Enrichment **scopes** (what you pay for per lead):
@@ -220,9 +227,9 @@ See [`examples/`](examples/) for a complete, runnable polling helper (standard &
 
 ## Endpoint reference
 
-The v2 surface is 24 operations across five resource groups, exposed on the `Cleanlist`
-facade as `cl.workspace`, `cl.lead_lists`, `cl.enrichment`, `cl.smart_agents`, and
-`cl.export`. All examples below use the standard client; prepend `await` (and import from
+The v2 surface is 26 operations across six resource groups, exposed on the `Cleanlist`
+facade as `cl.workspace`, `cl.lead_lists`, `cl.people_finder`, `cl.enrichment`,
+`cl.smart_agents`, and `cl.export`. All examples below use the standard client; prepend `await` (and import from
 `cleanlist_ai.aio…`) for async.
 
 Auto-generated, field-by-field docs for every model live in
@@ -236,6 +243,7 @@ Identity, credits, API keys, and usage.
 | --------------------------------------- | ------------------------------- | ------------------------------------------------------ |
 | `whoami()`                              | `GET /api/v2/whoami`            | Current identity, org, tier, scopes & feature grants.  |
 | `credits_balance()`                     | `GET /api/v2/credits/balance`   | Spendable credit balance for the org.                  |
+| `credits_estimate(EstimateCostRequest)` | `POST /api/v2/credits/estimate` | Price an operation and get a signed, single-use quote. |
 | `list_api_keys()`                       | `GET /api/v2/api-keys`          | List the org's API keys (metadata only).               |
 | `usage_report(days=…, group_by=…)`      | `GET /api/v2/usage`             | Credit-usage report over a window.                     |
 
@@ -244,6 +252,10 @@ me      = cl.workspace.whoami()
 balance = cl.workspace.credits_balance()
 keys    = cl.workspace.list_api_keys()
 usage   = cl.workspace.usage_report(days=30, group_by="tool")
+
+quote = cl.workspace.credits_estimate(
+    EstimateCostRequest(tool="enrich_person", scope="full", row_count=1)
+)
 ```
 
 ### Lead Lists (`cl.lead_lists`)
@@ -261,6 +273,8 @@ Create and manage lists and the leads inside them.
 | `add_leads_to_list(list_id, Body)`                    | `POST /api/v2/lead-lists/{list_id}/leads`      | Add leads by id or from a search cohort. |
 | `remove_leads_from_list(list_id, RemoveLeadsRequest)` | `DELETE /api/v2/lead-lists/{list_id}/leads`    | Remove up to 100 leads.                  |
 | `csv_import(list_id, CsvImportRequest)`               | `POST /api/v2/lead-lists/{list_id}/csv-import` | Import leads from a base64 CSV.          |
+| `find_people(list_id, FindPeopleRequest)`             | `POST /api/v2/lead-lists/{list_id}/find-people` | Find + import people at the list's companies (async). |
+| `find_people_status(list_id, workflow_id)`            | `GET …/{list_id}/find-people/status/{workflow_id}` | Poll a find-people job.               |
 
 ```python
 from cleanlist_ai.models import (
@@ -280,6 +294,36 @@ cl.lead_lists.add_leads_to_list(
 )
 
 cl.lead_lists.remove_leads_from_list(lst.list_id, RemoveLeadsRequest(lead_ids=["lead_abc"]))
+```
+
+### People Finder (`cl.people_finder`)
+
+Search people by filters. Searching is free; credits are spent only when you enrich or save.
+
+| Method                                            | HTTP                                                 | Description                                              |
+| ------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
+| `search_people(PeopleSearchRequest)`              | `POST /api/v2/people/find`                           | Search people by structured criteria (paginated).        |
+| `search_filters_people(field, query=…)`           | `GET /api/v2/people/find/filters`                    | Valid values / autocomplete for a filter field.          |
+| `compile_search(CompileRequest)`                  | `POST /api/v2/people/find/compile`                   | Dry run: show the compiled filter without searching.     |
+| `companies_find_start(PeopleByCompaniesRequest)`  | `POST /api/v2/people/find-at-companies`              | Start an async "find people at these companies" search. |
+| `companies_find_status(task_id)`                  | `GET /api/v2/people/find-at-companies/status/{task_id}` | Poll that search.                                     |
+
+```python
+from cleanlist_ai.models import CompileRequest, PeopleSearchCriteria, PeopleSearchRequest
+
+# `field` is positional (the generator names the parameter `var_field`).
+seniority = cl.people_finder.search_filters_people("seniority")
+titles    = cl.people_finder.search_filters_people("titles", query="vp sales")
+
+criteria = PeopleSearchCriteria(
+    jobTitlesInclude=["VP of Sales"],
+    seniority=["Vice President"],
+    contactCountries=["USA"],
+)
+preview = cl.people_finder.compile_search(CompileRequest(criteria=criteria))
+page    = cl.people_finder.search_people(PeopleSearchRequest(criteria=criteria, limit=25))
+for row in page.results:
+    print(row.full_name, row.title, row.company)
 ```
 
 ### Enrichment (`cl.enrichment`)
@@ -320,8 +364,11 @@ Run AI columns over a list (custom prompts, cold intros, preset research agents)
 | `get_smart_agent_results(smart_agent_task_id)` | `GET /api/v2/smart-agents/{smart_agent_task_id}` | Fetch a run's per-lead output.                        |
 
 ```python
-from cleanlist_ai.models import RunSmartAgentRequest
+from cleanlist_ai.models import EstimateCostRequest, RunSmartAgentRequest
 
+quote = cl.workspace.credits_estimate(
+    EstimateCostRequest(tool="run_smart_agent", list_id=lst.list_id, agent_type="custom_ai", row_count=50)
+)
 run = cl.smart_agents.run_smart_agent(
     RunSmartAgentRequest(
         list_id=lst.list_id,
@@ -329,7 +376,7 @@ run = cl.smart_agents.run_smart_agent(
         column_name="Personalized angle",
         prompt="In one sentence, suggest a cold-outreach angle for this lead.",
         max_rows=50,
-        quote_id=quote_id,  # signed quote for this exact request shape
+        quote_id=quote.quote_id,
     )
 )
 results = cl.smart_agents.get_smart_agent_results(run.smart_agent_task_id)
@@ -352,6 +399,24 @@ data = cl.export.export_json(lst.list_id, limit=500)
 for row in data.leads:
     print(row)
 ```
+
+## Examples
+
+Runnable scripts live in [`examples/`](examples/) (setup notes in
+[`examples/README.md`](examples/README.md)). Each reads `CLEANLIST_API_KEY` and an optional
+`CLEANLIST_HOST`.
+
+| Example | What it shows | Credits |
+| ------- | ------------- | ------- |
+| [`01_quickstart.py`](examples/01_quickstart.py) | whoami, credit balance, create and list lead lists. | Free |
+| [`02_enrich_person.py`](examples/02_enrich_person.py) | Enrich one contact and poll the workflow to completion. | Spends |
+| [`03_bulk_enrich_with_quote.py`](examples/03_bulk_enrich_with_quote.py) | The estimate → quote → bulk-enrich credit flow. | Spends |
+| [`04_lead_lists_crud.py`](examples/04_lead_lists_crud.py) | Lead-list lifecycle: create, read, update, paginate, delete. | Free |
+| [`05_smart_agent.py`](examples/05_smart_agent.py) | Run a custom AI smart-agent column and read the results. | Spends |
+| [`06_export.py`](examples/06_export.py) | Export a list to CSV (signed URL) and page through JSON. | Free |
+| [`07_async_quickstart.py`](examples/07_async_quickstart.py) | The async client (`cleanlist_ai.aio`) end to end. | Free |
+| [`08_error_handling.py`](examples/08_error_handling.py) | Catching typed API exceptions. | Free |
+| [`09_find_people.py`](examples/09_find_people.py) | People Finder: filter values, compile preview, search + next page. | Free |
 
 ## Error handling
 
