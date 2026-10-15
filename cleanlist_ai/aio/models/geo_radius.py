@@ -17,9 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from cleanlist_ai.aio.models.radius import Radius
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +27,7 @@ class GeoRadius(BaseModel):
     ``SearchFilters.geoRadius``: a free-text center plus a distance.
     """ # noqa: E501
     center: Optional[StrictStr] = Field(default='', description="Free-text location the radius is measured from.")
-    radius: Optional[Radius] = None
+    radius: Optional[Union[StrictFloat, StrictInt]] = Field(default=0, description="Distance from the center; must be greater than 0 to apply.")
     unit: Optional[StrictStr] = Field(default='km', description="Distance unit: km or mi.")
     __properties: ClassVar[List[str]] = ["center", "radius", "unit"]
 
@@ -81,9 +80,6 @@ class GeoRadius(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of radius
-        if self.radius:
-            _dict['radius'] = self.radius.to_dict()
         return _dict
 
     @classmethod
@@ -97,7 +93,7 @@ class GeoRadius(BaseModel):
 
         _obj = cls.model_validate({
             "center": obj.get("center") if obj.get("center") is not None else '',
-            "radius": Radius.from_dict(obj["radius"]) if obj.get("radius") is not None else None,
+            "radius": obj.get("radius") if obj.get("radius") is not None else 0,
             "unit": obj.get("unit") if obj.get("unit") is not None else 'km'
         })
         return _obj

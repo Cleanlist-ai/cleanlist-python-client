@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **role** | **str** | Workforce role, one of WORKFORCE_ROLES. | 
 **metric** | **str** | Role distribution percent, six-month growth (growth_6m), or year-over-year growth (growth_yoy). | 
 **op** | **str** | Comparison direction. | 
-**threshold** | [**Threshold**](Threshold.md) |  | 
+**threshold** | **float** | Finite percentage threshold; growth thresholds may be negative. | 
 
 ## Example
 

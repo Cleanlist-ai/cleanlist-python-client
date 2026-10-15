@@ -7,7 +7,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **center** | **str** | Free-text location the radius is measured from. | [optional] [default to '']
-**radius** | [**Radius**](Radius.md) |  | [optional] 
+**radius** | **float** | Distance from the center; must be greater than 0 to apply. | [optional] [default to 0]
 **unit** | **str** | Distance unit: km or mi. | [optional] [default to 'km']
 
 ## Example

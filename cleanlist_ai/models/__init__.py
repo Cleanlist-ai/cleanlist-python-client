@@ -27,7 +27,6 @@ from cleanlist_ai.models.compile_request import CompileRequest
 from cleanlist_ai.models.compile_response import CompileResponse
 from cleanlist_ai.models.create_list_request import CreateListRequest
 from cleanlist_ai.models.credits_balance_response import CreditsBalanceResponse
-from cleanlist_ai.models.credits_charged import CreditsCharged
 from cleanlist_ai.models.crm_filter_clause import CrmFilterClause
 from cleanlist_ai.models.crm_filter_sections import CrmFilterSections
 from cleanlist_ai.models.csv_import_request import CsvImportRequest
@@ -68,7 +67,6 @@ from cleanlist_ai.models.people_search_result_row import PeopleSearchResultRow
 from cleanlist_ai.models.public_api_error import PublicApiError
 from cleanlist_ai.models.public_api_error_payload import PublicApiErrorPayload
 from cleanlist_ai.models.public_lead_list_update import PublicLeadListUpdate
-from cleanlist_ai.models.radius import Radius
 from cleanlist_ai.models.remove_leads_request import RemoveLeadsRequest
 from cleanlist_ai.models.remove_leads_response import RemoveLeadsResponse
 from cleanlist_ai.models.run_smart_agent_request import RunSmartAgentRequest
@@ -79,7 +77,6 @@ from cleanlist_ai.models.smart_agent_result_row import SmartAgentResultRow
 from cleanlist_ai.models.smart_agent_results_response import SmartAgentResultsResponse
 from cleanlist_ai.models.smart_agent_run import SmartAgentRun
 from cleanlist_ai.models.suggested_action import SuggestedAction
-from cleanlist_ai.models.threshold import Threshold
 from cleanlist_ai.models.usage_group_row import UsageGroupRow
 from cleanlist_ai.models.usage_report_response import UsageReportResponse
 from cleanlist_ai.models.validation_error import ValidationError

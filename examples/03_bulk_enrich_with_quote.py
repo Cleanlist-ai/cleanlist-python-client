@@ -26,9 +26,8 @@ def main() -> None:
     list_id, quote_id = sys.argv[1], sys.argv[2]
 
     with client() as cl:
-        # 1. Show the balance before spending.
-        balance = cl.workspace.credits_balance()
-        print(f"Balance: {balance}")
+        # 1. Show the balance (the API rejects the run if the quote exceeds it).
+        print(f"Balance: {cl.workspace.credits_balance().credits} credits")
 
         # 2. Redeem the quote to dispatch the bulk workflow.
         run = cl.enrichment.enrich_list(
