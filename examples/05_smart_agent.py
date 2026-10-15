@@ -1,38 +1,29 @@
 """Run a custom AI smart-agent column over a list and read the per-lead results.
 
-⚠️ Spends credits (priced per processed row). Estimates first and prints the cost.
+⚠️ Spends credits (priced per processed row).
 
-    python examples/05_smart_agent.py <list_id>
+``run_smart_agent`` requires a signed, single-use ``quote_id`` for this exact request
+shape. The pricing endpoint (``POST /api/v2/credits/estimate``) is no longer part of
+the public API spec, so this SDK cannot request a quote — pass one you already have.
+
+    python examples/05_smart_agent.py <list_id> <quote_id>
 """
 import sys
 import time
 
 from _common import client
 
-from cleanlist_ai.models import EstimateCostRequest, RunSmartAgentRequest
+from cleanlist_ai.models import RunSmartAgentRequest
 
 MAX_ROWS = 25
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        sys.exit("Usage: python examples/05_smart_agent.py <list_id>")
-    list_id = sys.argv[1]
+    if len(sys.argv) < 3:
+        sys.exit("Usage: python examples/05_smart_agent.py <list_id> <quote_id>")
+    list_id, quote_id = sys.argv[1], sys.argv[2]
 
     with client() as cl:
-        # Price the run for the exact request shape.
-        quote = cl.workspace.credits_estimate(
-            EstimateCostRequest(
-                tool="run_smart_agent",
-                list_id=list_id,
-                agent_type="custom_ai",
-                row_count=MAX_ROWS,
-            )
-        )
-        print(f"Cost: {quote.estimated_cost} credits (sufficient={quote.sufficient})")
-        if not quote.sufficient:
-            sys.exit("Not enough credits.")
-
         run = cl.smart_agents.run_smart_agent(
             RunSmartAgentRequest(
                 list_id=list_id,
@@ -41,7 +32,7 @@ def main() -> None:
                 prompt="In one sentence, suggest a cold-outreach angle for this lead.",
                 lead_scope="subset",
                 max_rows=MAX_ROWS,
-                quote_id=quote.quote_id,
+                quote_id=quote_id,
             )
         )
         print(f"Started smart agent: {run.smart_agent_task_id} (status={run.status})")

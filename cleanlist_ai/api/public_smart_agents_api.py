@@ -97,7 +97,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "SmartAgentResultsResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -165,7 +173,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "SmartAgentResultsResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -233,7 +249,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "SmartAgentResultsResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -365,7 +389,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ListSmartAgentsResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -437,7 +469,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ListSmartAgentsResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -509,7 +549,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "ListSmartAgentsResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -608,7 +656,7 @@ class PublicSmartAgentsApi:
     ) -> RunSmartAgentResponse:
         """Run a smart agent
 
-        Launch an AI smart agent over the leads in a list and return a run id.  Pick an `agent_type` — `custom_ai` (your own `prompt`), `cold_intro_email` (personalized opener), or a preset research agent — and the run executes asynchronously as a smart column, one AI call per lead. Runs are metered per lead by agent type (e.g. `custom_ai` ≈ 1 credit/lead, `cold_intro_email` ≈ 3 credits/lead) and require a single-use `quote_id` from POST /credits/estimate; credits are debited as rows complete. Scope with `lead_scope=\"subset\"` + `max_rows` for speed and cost control — a `lead_scope=\"all\"` run above the approval threshold (default 500 leads) is blocked with a 400 `approval_required` until you narrow it or route a human approval. The response returns immediately with `status=\"pending\"`; poll GET /smart-agents/{smart_agent_task_id} for progress and per-lead results.  **📖 Docs:** https://docs.cleanlist.ai/guides/using-ai-agents
+        Launch an AI smart agent over the leads in a list and return a run id.  Pick an `agent_type` — `custom_ai` (your own `prompt`), `cold_intro_email` (personalized opener), or a preset research agent — and the run executes asynchronously as a smart column, one AI call per lead. Runs are metered per lead by agent type (`custom_ai` is priced from its `prompt`, so read its price from the quote; `cold_intro_email` ≈ 3 credits/lead) and require a single-use `quote_id` from POST /credits/estimate; credits are debited before dispatch. Cold intro email requires enriched profiles and an active organization email template. Scope with `lead_scope=\"subset\"` + `max_rows` for cost control. Any selection above the approval threshold (default 500 leads) is blocked with `approval_required`; this public route requires a smaller selection. The response returns immediately with `status=\"pending\"`; poll GET /smart-agents/{smart_agent_task_id} for progress and per-lead results.  **📖 Docs:** https://docs.cleanlist.ai/guides/using-ai-agents
 
         :param run_smart_agent_request: (required)
         :type run_smart_agent_request: RunSmartAgentRequest
@@ -644,7 +692,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "RunSmartAgentResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -676,7 +732,7 @@ class PublicSmartAgentsApi:
     ) -> ApiResponse[RunSmartAgentResponse]:
         """Run a smart agent
 
-        Launch an AI smart agent over the leads in a list and return a run id.  Pick an `agent_type` — `custom_ai` (your own `prompt`), `cold_intro_email` (personalized opener), or a preset research agent — and the run executes asynchronously as a smart column, one AI call per lead. Runs are metered per lead by agent type (e.g. `custom_ai` ≈ 1 credit/lead, `cold_intro_email` ≈ 3 credits/lead) and require a single-use `quote_id` from POST /credits/estimate; credits are debited as rows complete. Scope with `lead_scope=\"subset\"` + `max_rows` for speed and cost control — a `lead_scope=\"all\"` run above the approval threshold (default 500 leads) is blocked with a 400 `approval_required` until you narrow it or route a human approval. The response returns immediately with `status=\"pending\"`; poll GET /smart-agents/{smart_agent_task_id} for progress and per-lead results.  **📖 Docs:** https://docs.cleanlist.ai/guides/using-ai-agents
+        Launch an AI smart agent over the leads in a list and return a run id.  Pick an `agent_type` — `custom_ai` (your own `prompt`), `cold_intro_email` (personalized opener), or a preset research agent — and the run executes asynchronously as a smart column, one AI call per lead. Runs are metered per lead by agent type (`custom_ai` is priced from its `prompt`, so read its price from the quote; `cold_intro_email` ≈ 3 credits/lead) and require a single-use `quote_id` from POST /credits/estimate; credits are debited before dispatch. Cold intro email requires enriched profiles and an active organization email template. Scope with `lead_scope=\"subset\"` + `max_rows` for cost control. Any selection above the approval threshold (default 500 leads) is blocked with `approval_required`; this public route requires a smaller selection. The response returns immediately with `status=\"pending\"`; poll GET /smart-agents/{smart_agent_task_id} for progress and per-lead results.  **📖 Docs:** https://docs.cleanlist.ai/guides/using-ai-agents
 
         :param run_smart_agent_request: (required)
         :type run_smart_agent_request: RunSmartAgentRequest
@@ -712,7 +768,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "RunSmartAgentResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -744,7 +808,7 @@ class PublicSmartAgentsApi:
     ) -> RESTResponseType:
         """Run a smart agent
 
-        Launch an AI smart agent over the leads in a list and return a run id.  Pick an `agent_type` — `custom_ai` (your own `prompt`), `cold_intro_email` (personalized opener), or a preset research agent — and the run executes asynchronously as a smart column, one AI call per lead. Runs are metered per lead by agent type (e.g. `custom_ai` ≈ 1 credit/lead, `cold_intro_email` ≈ 3 credits/lead) and require a single-use `quote_id` from POST /credits/estimate; credits are debited as rows complete. Scope with `lead_scope=\"subset\"` + `max_rows` for speed and cost control — a `lead_scope=\"all\"` run above the approval threshold (default 500 leads) is blocked with a 400 `approval_required` until you narrow it or route a human approval. The response returns immediately with `status=\"pending\"`; poll GET /smart-agents/{smart_agent_task_id} for progress and per-lead results.  **📖 Docs:** https://docs.cleanlist.ai/guides/using-ai-agents
+        Launch an AI smart agent over the leads in a list and return a run id.  Pick an `agent_type` — `custom_ai` (your own `prompt`), `cold_intro_email` (personalized opener), or a preset research agent — and the run executes asynchronously as a smart column, one AI call per lead. Runs are metered per lead by agent type (`custom_ai` is priced from its `prompt`, so read its price from the quote; `cold_intro_email` ≈ 3 credits/lead) and require a single-use `quote_id` from POST /credits/estimate; credits are debited before dispatch. Cold intro email requires enriched profiles and an active organization email template. Scope with `lead_scope=\"subset\"` + `max_rows` for cost control. Any selection above the approval threshold (default 500 leads) is blocked with `approval_required`; this public route requires a smaller selection. The response returns immediately with `status=\"pending\"`; poll GET /smart-agents/{smart_agent_task_id} for progress and per-lead results.  **📖 Docs:** https://docs.cleanlist.ai/guides/using-ai-agents
 
         :param run_smart_agent_request: (required)
         :type run_smart_agent_request: RunSmartAgentRequest
@@ -780,7 +844,15 @@ class PublicSmartAgentsApi:
 
         _response_types_map: Dict[str, Optional[str]] = {
             '200': "RunSmartAgentResponse",
-            '422': "HTTPValidationError",
+            '422': "PublicApiError",
+            '400': "PublicApiError",
+            '401': "PublicApiError",
+            '403': "PublicApiError",
+            '404': "PublicApiError",
+            '409': "PublicApiError",
+            '429': "PublicApiError",
+            '500': "PublicApiError",
+            '502': "PublicApiError",
         }
         response_data = self.api_client.call_api(
             *_param,

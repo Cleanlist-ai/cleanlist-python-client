@@ -21,6 +21,7 @@ __all__ = [
     "PublicEnrichmentApi",
     "PublicExportApi",
     "PublicLeadListsApi",
+    "PublicPeopleFinderApi",
     "PublicSmartAgentsApi",
     "PublicWorkspaceApi",
     "ApiResponse",
@@ -38,11 +39,20 @@ __all__ = [
     "ApiKeyInfo",
     "ApiKeysResponse",
     "Body",
+    "CompaniesFindStartResponse",
+    "CompaniesFindStatusResponse",
     "CompanyRecord",
+    "CompanySearchCriteria",
+    "CompileRequest",
+    "CompileResponse",
     "CreateListRequest",
     "CreditsBalanceResponse",
+    "CreditsCharged",
+    "CrmFilterClause",
+    "CrmFilterSections",
     "CsvImportRequest",
     "CsvImportResponse",
+    "CurrentRoleEvidence",
     "DeleteListResponse",
     "EnrichByTaskEntityResult",
     "EnrichByTaskRequest",
@@ -53,11 +63,14 @@ __all__ = [
     "EnrichListResponse",
     "EnrichPersonRequest",
     "EnrichPersonResponse",
-    "EstimateCostRequest",
-    "EstimateCostResponse",
     "ExportCsvRequest",
     "ExportCsvResponse",
     "ExportJsonResponse",
+    "FilterOption",
+    "FindPeopleRequest",
+    "FindPeopleResponse",
+    "FindPeopleStatusResponse",
+    "GeoRadius",
     "HTTPValidationError",
     "LeadRow",
     "LeadsPageResponse",
@@ -65,27 +78,42 @@ __all__ = [
     "ListSmartAgentsResponse",
     "ListSummary",
     "ListsPageResponse",
+    "PeopleByCompaniesRequest",
+    "PeopleFiltersResponse",
+    "PeopleMatchEvidence",
+    "PeopleSearchCriteria",
+    "PeopleSearchRequest",
+    "PeopleSearchResponse",
+    "PeopleSearchResultRow",
+    "PublicApiError",
+    "PublicApiErrorPayload",
     "PublicLeadListUpdate",
+    "Radius",
     "RemoveLeadsRequest",
     "RemoveLeadsResponse",
     "RunSmartAgentRequest",
     "RunSmartAgentResponse",
+    "SearchHandoff",
     "SingleEnrichmentResultRead",
     "SmartAgentResultRow",
     "SmartAgentResultsResponse",
     "SmartAgentRun",
+    "SuggestedAction",
+    "Threshold",
     "UsageGroupRow",
     "UsageReportResponse",
     "ValidationError",
     "ValidationErrorLocInner",
     "WhoamiResponse",
     "WorkflowStatusResponse",
+    "WorkforceRule",
 ]
 
 # import apis into sdk package
 from cleanlist_ai.api.public_enrichment_api import PublicEnrichmentApi as PublicEnrichmentApi
 from cleanlist_ai.api.public_export_api import PublicExportApi as PublicExportApi
 from cleanlist_ai.api.public_lead_lists_api import PublicLeadListsApi as PublicLeadListsApi
+from cleanlist_ai.api.public_people_finder_api import PublicPeopleFinderApi as PublicPeopleFinderApi
 from cleanlist_ai.api.public_smart_agents_api import PublicSmartAgentsApi as PublicSmartAgentsApi
 from cleanlist_ai.api.public_workspace_api import PublicWorkspaceApi as PublicWorkspaceApi
 
@@ -107,11 +135,20 @@ from cleanlist_ai.models.add_leads_response import AddLeadsResponse as AddLeadsR
 from cleanlist_ai.models.api_key_info import ApiKeyInfo as ApiKeyInfo
 from cleanlist_ai.models.api_keys_response import ApiKeysResponse as ApiKeysResponse
 from cleanlist_ai.models.body import Body as Body
+from cleanlist_ai.models.companies_find_start_response import CompaniesFindStartResponse as CompaniesFindStartResponse
+from cleanlist_ai.models.companies_find_status_response import CompaniesFindStatusResponse as CompaniesFindStatusResponse
 from cleanlist_ai.models.company_record import CompanyRecord as CompanyRecord
+from cleanlist_ai.models.company_search_criteria import CompanySearchCriteria as CompanySearchCriteria
+from cleanlist_ai.models.compile_request import CompileRequest as CompileRequest
+from cleanlist_ai.models.compile_response import CompileResponse as CompileResponse
 from cleanlist_ai.models.create_list_request import CreateListRequest as CreateListRequest
 from cleanlist_ai.models.credits_balance_response import CreditsBalanceResponse as CreditsBalanceResponse
+from cleanlist_ai.models.credits_charged import CreditsCharged as CreditsCharged
+from cleanlist_ai.models.crm_filter_clause import CrmFilterClause as CrmFilterClause
+from cleanlist_ai.models.crm_filter_sections import CrmFilterSections as CrmFilterSections
 from cleanlist_ai.models.csv_import_request import CsvImportRequest as CsvImportRequest
 from cleanlist_ai.models.csv_import_response import CsvImportResponse as CsvImportResponse
+from cleanlist_ai.models.current_role_evidence import CurrentRoleEvidence as CurrentRoleEvidence
 from cleanlist_ai.models.delete_list_response import DeleteListResponse as DeleteListResponse
 from cleanlist_ai.models.enrich_by_task_entity_result import EnrichByTaskEntityResult as EnrichByTaskEntityResult
 from cleanlist_ai.models.enrich_by_task_request import EnrichByTaskRequest as EnrichByTaskRequest
@@ -122,11 +159,14 @@ from cleanlist_ai.models.enrich_list_request import EnrichListRequest as EnrichL
 from cleanlist_ai.models.enrich_list_response import EnrichListResponse as EnrichListResponse
 from cleanlist_ai.models.enrich_person_request import EnrichPersonRequest as EnrichPersonRequest
 from cleanlist_ai.models.enrich_person_response import EnrichPersonResponse as EnrichPersonResponse
-from cleanlist_ai.models.estimate_cost_request import EstimateCostRequest as EstimateCostRequest
-from cleanlist_ai.models.estimate_cost_response import EstimateCostResponse as EstimateCostResponse
 from cleanlist_ai.models.export_csv_request import ExportCsvRequest as ExportCsvRequest
 from cleanlist_ai.models.export_csv_response import ExportCsvResponse as ExportCsvResponse
 from cleanlist_ai.models.export_json_response import ExportJsonResponse as ExportJsonResponse
+from cleanlist_ai.models.filter_option import FilterOption as FilterOption
+from cleanlist_ai.models.find_people_request import FindPeopleRequest as FindPeopleRequest
+from cleanlist_ai.models.find_people_response import FindPeopleResponse as FindPeopleResponse
+from cleanlist_ai.models.find_people_status_response import FindPeopleStatusResponse as FindPeopleStatusResponse
+from cleanlist_ai.models.geo_radius import GeoRadius as GeoRadius
 from cleanlist_ai.models.http_validation_error import HTTPValidationError as HTTPValidationError
 from cleanlist_ai.models.lead_row import LeadRow as LeadRow
 from cleanlist_ai.models.leads_page_response import LeadsPageResponse as LeadsPageResponse
@@ -134,21 +174,35 @@ from cleanlist_ai.models.list_detail_response import ListDetailResponse as ListD
 from cleanlist_ai.models.list_smart_agents_response import ListSmartAgentsResponse as ListSmartAgentsResponse
 from cleanlist_ai.models.list_summary import ListSummary as ListSummary
 from cleanlist_ai.models.lists_page_response import ListsPageResponse as ListsPageResponse
+from cleanlist_ai.models.people_by_companies_request import PeopleByCompaniesRequest as PeopleByCompaniesRequest
+from cleanlist_ai.models.people_filters_response import PeopleFiltersResponse as PeopleFiltersResponse
+from cleanlist_ai.models.people_match_evidence import PeopleMatchEvidence as PeopleMatchEvidence
+from cleanlist_ai.models.people_search_criteria import PeopleSearchCriteria as PeopleSearchCriteria
+from cleanlist_ai.models.people_search_request import PeopleSearchRequest as PeopleSearchRequest
+from cleanlist_ai.models.people_search_response import PeopleSearchResponse as PeopleSearchResponse
+from cleanlist_ai.models.people_search_result_row import PeopleSearchResultRow as PeopleSearchResultRow
+from cleanlist_ai.models.public_api_error import PublicApiError as PublicApiError
+from cleanlist_ai.models.public_api_error_payload import PublicApiErrorPayload as PublicApiErrorPayload
 from cleanlist_ai.models.public_lead_list_update import PublicLeadListUpdate as PublicLeadListUpdate
+from cleanlist_ai.models.radius import Radius as Radius
 from cleanlist_ai.models.remove_leads_request import RemoveLeadsRequest as RemoveLeadsRequest
 from cleanlist_ai.models.remove_leads_response import RemoveLeadsResponse as RemoveLeadsResponse
 from cleanlist_ai.models.run_smart_agent_request import RunSmartAgentRequest as RunSmartAgentRequest
 from cleanlist_ai.models.run_smart_agent_response import RunSmartAgentResponse as RunSmartAgentResponse
+from cleanlist_ai.models.search_handoff import SearchHandoff as SearchHandoff
 from cleanlist_ai.models.single_enrichment_result_read import SingleEnrichmentResultRead as SingleEnrichmentResultRead
 from cleanlist_ai.models.smart_agent_result_row import SmartAgentResultRow as SmartAgentResultRow
 from cleanlist_ai.models.smart_agent_results_response import SmartAgentResultsResponse as SmartAgentResultsResponse
 from cleanlist_ai.models.smart_agent_run import SmartAgentRun as SmartAgentRun
+from cleanlist_ai.models.suggested_action import SuggestedAction as SuggestedAction
+from cleanlist_ai.models.threshold import Threshold as Threshold
 from cleanlist_ai.models.usage_group_row import UsageGroupRow as UsageGroupRow
 from cleanlist_ai.models.usage_report_response import UsageReportResponse as UsageReportResponse
 from cleanlist_ai.models.validation_error import ValidationError as ValidationError
 from cleanlist_ai.models.validation_error_loc_inner import ValidationErrorLocInner as ValidationErrorLocInner
 from cleanlist_ai.models.whoami_response import WhoamiResponse as WhoamiResponse
 from cleanlist_ai.models.workflow_status_response import WorkflowStatusResponse as WorkflowStatusResponse
+from cleanlist_ai.models.workforce_rule import WorkforceRule as WorkforceRule
 
 
 # --- Cleanlist convenience facade (appended by scripts/generate.sh) ---

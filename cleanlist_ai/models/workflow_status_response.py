@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from cleanlist_ai.models.credits_charged import CreditsCharged
 from cleanlist_ai.models.single_enrichment_result_read import SingleEnrichmentResultRead
 from typing import Optional, Set
 from typing_extensions import Self
@@ -45,7 +46,7 @@ class WorkflowStatusResponse(BaseModel):
     refund_status: Optional[StrictStr] = None
     refund_message: Optional[StrictStr] = None
     result: Optional[SingleEnrichmentResultRead] = None
-    credits_charged: Optional[StrictInt] = None
+    credits_charged: Optional[CreditsCharged] = None
     credits_refunded: Optional[StrictInt] = None
     additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "workflow_id", "status", "progress", "total", "processed", "completed", "failed", "enrichment_type", "lead_list_id", "summary", "refund_status", "refund_message", "result", "credits_charged", "credits_refunded"]
@@ -104,6 +105,9 @@ class WorkflowStatusResponse(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of result
         if self.result:
             _dict['result'] = self.result.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of credits_charged
+        if self.credits_charged:
+            _dict['credits_charged'] = self.credits_charged.to_dict()
         # puts key-value pairs in additional_properties in the top level
         if self.additional_properties is not None:
             for _key, _value in self.additional_properties.items():
@@ -229,7 +233,7 @@ class WorkflowStatusResponse(BaseModel):
             "refund_status": obj.get("refund_status"),
             "refund_message": obj.get("refund_message"),
             "result": SingleEnrichmentResultRead.from_dict(obj["result"]) if obj.get("result") is not None else None,
-            "credits_charged": obj.get("credits_charged"),
+            "credits_charged": CreditsCharged.from_dict(obj["credits_charged"]) if obj.get("credits_charged") is not None else None,
             "credits_refunded": obj.get("credits_refunded")
         })
         # store additional fields in additional_properties

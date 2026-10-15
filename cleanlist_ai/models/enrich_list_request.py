@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,7 +30,8 @@ class EnrichListRequest(BaseModel):
     list_id: StrictStr = Field(description="The lead list to enrich in bulk. Every lead in the list runs through the provider waterfall. Must be non-empty and accessible to your API key.")
     scope: Optional[StrictStr] = Field(default='partial', description="Enrichment scope per lead. 'partial' = email + LinkedIn + title + company (1 credit); 'phone-only' = phone only (10 credits); 'full' = email AND phone (11 credits).")
     quote_id: StrictStr = Field(description="Required. Obtain via POST /credits/estimate first (bound to this list_id + scope + lead count). Bulk spend must be pre-approved; cost is capped at the quote's max_credits.")
-    __properties: ClassVar[List[str]] = ["list_id", "scope", "quote_id"]
+    lead_ids: Optional[Annotated[List[StrictStr], Field(min_length=1, max_length=500)]] = None
+    __properties: ClassVar[List[str]] = ["list_id", "scope", "quote_id", "lead_ids"]
 
     @field_validator('scope')
     def scope_validate_enum(cls, value):
@@ -80,6 +82,11 @@ class EnrichListRequest(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if lead_ids (nullable) is None
+        # and model_fields_set contains the field
+        if self.lead_ids is None and "lead_ids" in self.model_fields_set:
+            _dict['lead_ids'] = None
+
         return _dict
 
     @classmethod
@@ -94,7 +101,8 @@ class EnrichListRequest(BaseModel):
         _obj = cls.model_validate({
             "list_id": obj.get("list_id"),
             "scope": obj.get("scope") if obj.get("scope") is not None else 'partial',
-            "quote_id": obj.get("quote_id")
+            "quote_id": obj.get("quote_id"),
+            "lead_ids": obj.get("lead_ids")
         })
         return _obj
 

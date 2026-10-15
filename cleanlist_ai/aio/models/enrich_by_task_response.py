@@ -33,12 +33,13 @@ class EnrichByTaskResponse(BaseModel):
     usage: Optional[StrictStr] = None
     message: Optional[StrictStr] = None
     entity_kind: StrictStr = Field(description="Resolved entity type of the task. 'person' → async workflow; 'company' → synchronous inline results.")
+    list_id: Optional[StrictStr] = None
     workflow_id: Optional[StrictStr] = None
     status: StrictStr = Field(description="'pending' for person tasks (workflow running); 'completed' for company tasks (results already attached).")
     total_entities: StrictInt = Field(description="Number of cohort entities dispatched for enrichment.")
     credits_reserved: StrictInt = Field(description="Person tasks: upfront reservation cap; the workflow settles with actual usage and refunds the delta. Company tasks: the final billed amount (settled inline).")
     results: List[EnrichByTaskEntityResult] = Field(description="Per-entity outcomes. Person tasks: all 'queued'. Company tasks: 'enriched'/'skipped'/'failed' with records attached.")
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "workflow_id", "status", "total_entities", "credits_reserved", "results"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "list_id", "workflow_id", "status", "total_entities", "credits_reserved", "results"]
 
     @field_validator('entity_kind')
     def entity_kind_validate_enum(cls, value):
@@ -125,6 +126,11 @@ class EnrichByTaskResponse(BaseModel):
         if self.message is None and "message" in self.model_fields_set:
             _dict['message'] = None
 
+        # set to None if list_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.list_id is None and "list_id" in self.model_fields_set:
+            _dict['list_id'] = None
+
         # set to None if workflow_id (nullable) is None
         # and model_fields_set contains the field
         if self.workflow_id is None and "workflow_id" in self.model_fields_set:
@@ -148,6 +154,7 @@ class EnrichByTaskResponse(BaseModel):
             "usage": obj.get("usage"),
             "message": obj.get("message"),
             "entity_kind": obj.get("entity_kind"),
+            "list_id": obj.get("list_id"),
             "workflow_id": obj.get("workflow_id"),
             "status": obj.get("status"),
             "total_entities": obj.get("total_entities"),
