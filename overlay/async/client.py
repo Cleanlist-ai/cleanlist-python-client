@@ -24,6 +24,7 @@ from cleanlist_ai.aio.configuration import Configuration
 from cleanlist_ai.aio.api.public_enrichment_api import PublicEnrichmentApi
 from cleanlist_ai.aio.api.public_export_api import PublicExportApi
 from cleanlist_ai.aio.api.public_lead_lists_api import PublicLeadListsApi
+from cleanlist_ai.aio.api.public_people_finder_api import PublicPeopleFinderApi
 from cleanlist_ai.aio.api.public_smart_agents_api import PublicSmartAgentsApi
 from cleanlist_ai.aio.api.public_workspace_api import PublicWorkspaceApi
 
@@ -51,7 +52,8 @@ class Cleanlist:
         advanced needs; ``access_token`` / ``host`` are applied on top of it.
 
     Resource groups mirror the synchronous client: :attr:`workspace`,
-    :attr:`lead_lists`, :attr:`enrichment`, :attr:`smart_agents`, :attr:`export`.
+    :attr:`lead_lists`, :attr:`people_finder`, :attr:`enrichment`,
+    :attr:`smart_agents`, :attr:`export`.
     """
 
     def __init__(
@@ -80,6 +82,7 @@ class Cleanlist:
 
         self.workspace = PublicWorkspaceApi(self.api_client)
         self.lead_lists = PublicLeadListsApi(self.api_client)
+        self.people_finder = PublicPeopleFinderApi(self.api_client)
         self.enrichment = PublicEnrichmentApi(self.api_client)
         self.smart_agents = PublicSmartAgentsApi(self.api_client)
         self.export = PublicExportApi(self.api_client)

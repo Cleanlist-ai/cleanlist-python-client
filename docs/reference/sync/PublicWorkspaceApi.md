@@ -5,6 +5,7 @@ All URIs are relative to *https://api.cleanlist.ai*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**credits_balance**](PublicWorkspaceApi.md#credits_balance) | **GET** /api/v2/credits/balance | Get credit balance
+[**credits_estimate**](PublicWorkspaceApi.md#credits_estimate) | **POST** /api/v2/credits/estimate | Estimate cost &amp; get a signed quote
 [**list_api_keys**](PublicWorkspaceApi.md#list_api_keys) | **GET** /api/v2/api-keys | List API keys
 [**usage_report**](PublicWorkspaceApi.md#usage_report) | **GET** /api/v2/usage | Get usage report
 [**whoami**](PublicWorkspaceApi.md#whoami) | **GET** /api/v2/whoami | Get current identity &amp; entitlements
@@ -97,6 +98,104 @@ This endpoint does not need any parameter.
 **500** | Internal error. |  -  |
 **502** | Upstream provider error. |  -  |
 **422** | Request failed validation. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **credits_estimate**
+> EstimateCostResponse credits_estimate(estimate_cost_request)
+
+Estimate cost & get a signed quote
+
+Pre-flight a paid operation and mint a signed, single-use `quote_id`.
+The quote binds the canonical request (tool, list_id|filters|cohort, scope,
+row_count, org) via HMAC and must be presented at execution time by every
+paid bulk tool (`enrich_list`, `run_smart_agent`, `sync_to_crm`,
+`sync_to_sequencer`, cohort enrichments). Row count is derived
+authoritatively from the list or cohort — never trusted from the caller —
+so a small quote can't be replayed against a large job. Requires the
+`credits:read` scope; estimating itself is free, and the response reports
+whether the org has `sufficient` credits to proceed.
+
+**📖 Docs:** https://docs.cleanlist.ai/api-reference/credits
+
+### Example
+
+* Bearer Authentication (HTTPBearer):
+
+```python
+import cleanlist_ai
+from cleanlist_ai.models.estimate_cost_request import EstimateCostRequest
+from cleanlist_ai.models.estimate_cost_response import EstimateCostResponse
+from cleanlist_ai.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://api.cleanlist.ai
+# See configuration.py for a list of all supported configuration parameters.
+configuration = cleanlist_ai.Configuration(
+    host = "https://api.cleanlist.ai"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: HTTPBearer
+configuration = cleanlist_ai.Configuration(
+    access_token = os.environ["BEARER_TOKEN"]
+)
+
+# Enter a context with an instance of the API client
+with cleanlist_ai.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = cleanlist_ai.PublicWorkspaceApi(api_client)
+    estimate_cost_request = cleanlist_ai.EstimateCostRequest() # EstimateCostRequest | 
+
+    try:
+        # Estimate cost & get a signed quote
+        api_response = api_instance.credits_estimate(estimate_cost_request)
+        print("The response of PublicWorkspaceApi->credits_estimate:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PublicWorkspaceApi->credits_estimate: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **estimate_cost_request** | [**EstimateCostRequest**](EstimateCostRequest.md)|  | 
+
+### Return type
+
+[**EstimateCostResponse**](EstimateCostResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

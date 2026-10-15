@@ -17,9 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
-from cleanlist_ai.models.threshold import Threshold
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -30,7 +29,7 @@ class WorkforceRule(BaseModel):
     role: StrictStr = Field(description="Workforce role, one of WORKFORCE_ROLES.")
     metric: StrictStr = Field(description="Role distribution percent, six-month growth (growth_6m), or year-over-year growth (growth_yoy).")
     op: StrictStr = Field(description="Comparison direction.")
-    threshold: Threshold
+    threshold: Union[StrictFloat, StrictInt] = Field(description="Finite percentage threshold; growth thresholds may be negative.")
     __properties: ClassVar[List[str]] = ["role", "metric", "op", "threshold"]
 
     @field_validator('metric')
@@ -86,9 +85,6 @@ class WorkforceRule(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of threshold
-        if self.threshold:
-            _dict['threshold'] = self.threshold.to_dict()
         return _dict
 
     @classmethod
@@ -104,7 +100,7 @@ class WorkforceRule(BaseModel):
             "role": obj.get("role"),
             "metric": obj.get("metric"),
             "op": obj.get("op"),
-            "threshold": Threshold.from_dict(obj["threshold"]) if obj.get("threshold") is not None else None
+            "threshold": obj.get("threshold")
         })
         return _obj
 
