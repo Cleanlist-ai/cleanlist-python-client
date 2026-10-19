@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**company_ids** | **List[str]** | Companies to find people at. Must be companies already in lead_list_id (directly added or lead-derived); ids outside that set are dropped. | 
+**company_ids** | **List[str]** | Cleanlist company ids to find people at. Must be companies already in the list: read them from the &#x60;company_id&#x60; of the list&#39;s lead rows (GET /lead-lists/{list_id}/leads). Ids outside the list are dropped. | 
 **job_titles** | **List[str]** |  | [optional] 
 **seniority_levels** | **List[str]** |  | [optional] 
 **limit_per_company** | **int** |  | [optional] [default to 5]

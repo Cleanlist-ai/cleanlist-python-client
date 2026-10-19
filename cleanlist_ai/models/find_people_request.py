@@ -27,7 +27,7 @@ class FindPeopleRequest(BaseModel):
     """
     FindPeopleRequest
     """ # noqa: E501
-    company_ids: Annotated[List[StrictStr], Field(min_length=1, max_length=100)] = Field(description="Companies to find people at. Must be companies already in lead_list_id (directly added or lead-derived); ids outside that set are dropped.")
+    company_ids: Annotated[List[StrictStr], Field(min_length=1, max_length=100)] = Field(description="Cleanlist company ids to find people at. Must be companies already in the list: read them from the `company_id` of the list's lead rows (GET /lead-lists/{list_id}/leads). Ids outside the list are dropped.")
     job_titles: Optional[List[StrictStr]] = None
     seniority_levels: Optional[List[StrictStr]] = None
     limit_per_company: Optional[Annotated[int, Field(le=25, strict=True, ge=1)]] = 5

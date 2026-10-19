@@ -27,6 +27,7 @@ class EnrichByTaskResponse(BaseModel):
     """
     EnrichByTaskResponse
     """ # noqa: E501
+    crm_note: Optional[StrictStr] = None
     task_id: Optional[StrictStr] = None
     timestamp_ms: Optional[StrictInt] = None
     agent_instructions: Optional[StrictStr] = None
@@ -39,7 +40,7 @@ class EnrichByTaskResponse(BaseModel):
     total_entities: StrictInt = Field(description="Number of cohort entities dispatched for enrichment.")
     credits_reserved: StrictInt = Field(description="Person tasks: upfront reservation cap; the workflow settles with actual usage and refunds the delta. Company tasks: the final billed amount (settled inline).")
     results: List[EnrichByTaskEntityResult] = Field(description="Per-entity outcomes. Person tasks: all 'queued'. Company tasks: 'enriched'/'skipped'/'failed' with records attached.")
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "list_id", "workflow_id", "status", "total_entities", "credits_reserved", "results"]
+    __properties: ClassVar[List[str]] = ["crm_note", "task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "list_id", "workflow_id", "status", "total_entities", "credits_reserved", "results"]
 
     @field_validator('entity_kind')
     def entity_kind_validate_enum(cls, value):
@@ -101,6 +102,11 @@ class EnrichByTaskResponse(BaseModel):
                 if _item_results:
                     _items.append(_item_results.to_dict())
             _dict['results'] = _items
+        # set to None if crm_note (nullable) is None
+        # and model_fields_set contains the field
+        if self.crm_note is None and "crm_note" in self.model_fields_set:
+            _dict['crm_note'] = None
+
         # set to None if task_id (nullable) is None
         # and model_fields_set contains the field
         if self.task_id is None and "task_id" in self.model_fields_set:
@@ -148,6 +154,7 @@ class EnrichByTaskResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "crm_note": obj.get("crm_note"),
             "task_id": obj.get("task_id"),
             "timestamp_ms": obj.get("timestamp_ms"),
             "agent_instructions": obj.get("agent_instructions"),

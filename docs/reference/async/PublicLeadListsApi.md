@@ -237,19 +237,18 @@ Import a CSV into a lead list and optionally dispatch bulk enrichment.
 Pipeline:
     1. Authz: `lists:write` always; `enrich:write` additionally when
        `dispatch_enrichment=True` (the workflow spends credits).
-    2. Feature flag gate — disabled-by-default kill switch returns 503.
-    3. Idempotency cache lookup (org-wide, 24h TTL).
-    4. Base64 decode + parse via `parse_csv_to_rawpeople`.
-    5. If dispatching: verify quote (if provided), open reservation,
+    2. Idempotency cache lookup (org-wide, 24h TTL).
+    3. Base64 decode + parse via `parse_csv_to_rawpeople`.
+    4. If dispatching: verify quote (if provided), open reservation,
        redeem quote.
-    6. Bulk-insert RawPeople into the list. UUIDs are stamped
+    5. Bulk-insert RawPeople into the list. UUIDs are stamped
        Python-side so we can hand them to the workflow.
-    7. If dispatching: kick off `start_bulk_enrichment` with the
+    6. If dispatching: kick off `start_bulk_enrichment` with the
        parsed prospects + raw_person_ids. The workflow's per-Lead
        `insert_lead_to_list` activity handles prospect_count
        updates per the existing pattern; import-only path bumps
        prospect_count here directly.
-    8. Cache the response under `idempotency_key` (if provided).
+    7. Cache the response under `idempotency_key` (if provided).
 
 Cross-list dedup: this endpoint dedupes ONLY within the upload. A
 row whose identity already exists as a Lead elsewhere in the
@@ -461,7 +460,9 @@ Name | Type | Description  | Notes
 Find people at companies already in a list and import them (async)
 
 Start an async job that finds people at the given companies (which must
-already belong to ``list_id``) and imports them into that list.
+already belong to ``list_id``) and imports them into that list. Take the
+``company_ids`` from the ``company_id`` field of the list's lead rows
+(GET /lead-lists/{list_id}/leads).
 
 Returns a ``workflow_id`` immediately; poll ``poll_url``
 (GET /lead-lists/{list_id}/find-people/status/{workflow_id}) until ``status``

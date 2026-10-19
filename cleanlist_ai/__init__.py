@@ -39,6 +39,7 @@ __all__ = [
     "ApiKeyInfo",
     "ApiKeysResponse",
     "Body",
+    "CohortSummary",
     "CompaniesFindStartResponse",
     "CompaniesFindStatusResponse",
     "CompanyRecord",
@@ -79,6 +80,7 @@ __all__ = [
     "ListSmartAgentsResponse",
     "ListSummary",
     "ListsPageResponse",
+    "PendingImportRow",
     "PeopleByCompaniesRequest",
     "PeopleFiltersResponse",
     "PeopleMatchEvidence",
@@ -86,14 +88,18 @@ __all__ = [
     "PeopleSearchRequest",
     "PeopleSearchResponse",
     "PeopleSearchResultRow",
+    "PersonPresentationRow",
+    "PresentationLink",
     "PublicApiError",
     "PublicApiErrorPayload",
     "PublicLeadListUpdate",
+    "RawPersonStatus",
     "RemoveLeadsRequest",
     "RemoveLeadsResponse",
     "RunSmartAgentRequest",
     "RunSmartAgentResponse",
     "SearchHandoff",
+    "SearchPresentation",
     "SingleEnrichmentResultRead",
     "SmartAgentResultRow",
     "SmartAgentResultsResponse",
@@ -134,6 +140,7 @@ from cleanlist_ai.models.add_leads_response import AddLeadsResponse as AddLeadsR
 from cleanlist_ai.models.api_key_info import ApiKeyInfo as ApiKeyInfo
 from cleanlist_ai.models.api_keys_response import ApiKeysResponse as ApiKeysResponse
 from cleanlist_ai.models.body import Body as Body
+from cleanlist_ai.models.cohort_summary import CohortSummary as CohortSummary
 from cleanlist_ai.models.companies_find_start_response import CompaniesFindStartResponse as CompaniesFindStartResponse
 from cleanlist_ai.models.companies_find_status_response import CompaniesFindStatusResponse as CompaniesFindStatusResponse
 from cleanlist_ai.models.company_record import CompanyRecord as CompanyRecord
@@ -174,6 +181,7 @@ from cleanlist_ai.models.list_detail_response import ListDetailResponse as ListD
 from cleanlist_ai.models.list_smart_agents_response import ListSmartAgentsResponse as ListSmartAgentsResponse
 from cleanlist_ai.models.list_summary import ListSummary as ListSummary
 from cleanlist_ai.models.lists_page_response import ListsPageResponse as ListsPageResponse
+from cleanlist_ai.models.pending_import_row import PendingImportRow as PendingImportRow
 from cleanlist_ai.models.people_by_companies_request import PeopleByCompaniesRequest as PeopleByCompaniesRequest
 from cleanlist_ai.models.people_filters_response import PeopleFiltersResponse as PeopleFiltersResponse
 from cleanlist_ai.models.people_match_evidence import PeopleMatchEvidence as PeopleMatchEvidence
@@ -181,14 +189,18 @@ from cleanlist_ai.models.people_search_criteria import PeopleSearchCriteria as P
 from cleanlist_ai.models.people_search_request import PeopleSearchRequest as PeopleSearchRequest
 from cleanlist_ai.models.people_search_response import PeopleSearchResponse as PeopleSearchResponse
 from cleanlist_ai.models.people_search_result_row import PeopleSearchResultRow as PeopleSearchResultRow
+from cleanlist_ai.models.person_presentation_row import PersonPresentationRow as PersonPresentationRow
+from cleanlist_ai.models.presentation_link import PresentationLink as PresentationLink
 from cleanlist_ai.models.public_api_error import PublicApiError as PublicApiError
 from cleanlist_ai.models.public_api_error_payload import PublicApiErrorPayload as PublicApiErrorPayload
 from cleanlist_ai.models.public_lead_list_update import PublicLeadListUpdate as PublicLeadListUpdate
+from cleanlist_ai.models.raw_person_status import RawPersonStatus as RawPersonStatus
 from cleanlist_ai.models.remove_leads_request import RemoveLeadsRequest as RemoveLeadsRequest
 from cleanlist_ai.models.remove_leads_response import RemoveLeadsResponse as RemoveLeadsResponse
 from cleanlist_ai.models.run_smart_agent_request import RunSmartAgentRequest as RunSmartAgentRequest
 from cleanlist_ai.models.run_smart_agent_response import RunSmartAgentResponse as RunSmartAgentResponse
 from cleanlist_ai.models.search_handoff import SearchHandoff as SearchHandoff
+from cleanlist_ai.models.search_presentation import SearchPresentation as SearchPresentation
 from cleanlist_ai.models.single_enrichment_result_read import SingleEnrichmentResultRead as SingleEnrichmentResultRead
 from cleanlist_ai.models.smart_agent_result_row import SmartAgentResultRow as SmartAgentResultRow
 from cleanlist_ai.models.smart_agent_results_response import SmartAgentResultsResponse as SmartAgentResultsResponse

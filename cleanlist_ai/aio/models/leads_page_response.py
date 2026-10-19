@@ -20,6 +20,8 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from cleanlist_ai.aio.models.lead_row import LeadRow
+from cleanlist_ai.aio.models.pending_import_row import PendingImportRow
+from cleanlist_ai.aio.models.search_presentation import SearchPresentation
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,11 +34,15 @@ class LeadsPageResponse(BaseModel):
     agent_instructions: Optional[StrictStr] = None
     usage: Optional[StrictStr] = None
     message: Optional[StrictStr] = None
+    presentation: Optional[SearchPresentation] = None
+    pending_imports: Optional[List[PendingImportRow]] = None
+    pending_import_total: Optional[StrictInt] = None
+    pending_import_cursor: Optional[StrictStr] = None
     list_id: StrictStr = Field(description="Identifier of the list these leads belong to.")
     leads: List[LeadRow] = Field(description="The page of leads in the list.")
     total: StrictInt = Field(description="Total number of leads in the list across all pages.")
     cursor: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "list_id", "leads", "total", "cursor"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "presentation", "pending_imports", "pending_import_total", "pending_import_cursor", "list_id", "leads", "total", "cursor"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -77,6 +83,16 @@ class LeadsPageResponse(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of presentation
+        if self.presentation:
+            _dict['presentation'] = self.presentation.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in pending_imports (list)
+        _items = []
+        if self.pending_imports:
+            for _item_pending_imports in self.pending_imports:
+                if _item_pending_imports:
+                    _items.append(_item_pending_imports.to_dict())
+            _dict['pending_imports'] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in leads (list)
         _items = []
         if self.leads:
@@ -109,6 +125,26 @@ class LeadsPageResponse(BaseModel):
         if self.message is None and "message" in self.model_fields_set:
             _dict['message'] = None
 
+        # set to None if presentation (nullable) is None
+        # and model_fields_set contains the field
+        if self.presentation is None and "presentation" in self.model_fields_set:
+            _dict['presentation'] = None
+
+        # set to None if pending_imports (nullable) is None
+        # and model_fields_set contains the field
+        if self.pending_imports is None and "pending_imports" in self.model_fields_set:
+            _dict['pending_imports'] = None
+
+        # set to None if pending_import_total (nullable) is None
+        # and model_fields_set contains the field
+        if self.pending_import_total is None and "pending_import_total" in self.model_fields_set:
+            _dict['pending_import_total'] = None
+
+        # set to None if pending_import_cursor (nullable) is None
+        # and model_fields_set contains the field
+        if self.pending_import_cursor is None and "pending_import_cursor" in self.model_fields_set:
+            _dict['pending_import_cursor'] = None
+
         # set to None if cursor (nullable) is None
         # and model_fields_set contains the field
         if self.cursor is None and "cursor" in self.model_fields_set:
@@ -131,6 +167,10 @@ class LeadsPageResponse(BaseModel):
             "agent_instructions": obj.get("agent_instructions"),
             "usage": obj.get("usage"),
             "message": obj.get("message"),
+            "presentation": SearchPresentation.from_dict(obj["presentation"]) if obj.get("presentation") is not None else None,
+            "pending_imports": [PendingImportRow.from_dict(_item) for _item in obj["pending_imports"]] if obj.get("pending_imports") is not None else None,
+            "pending_import_total": obj.get("pending_import_total"),
+            "pending_import_cursor": obj.get("pending_import_cursor"),
             "list_id": obj.get("list_id"),
             "leads": [LeadRow.from_dict(_item) for _item in obj["leads"]] if obj.get("leads") is not None else None,
             "total": obj.get("total"),
