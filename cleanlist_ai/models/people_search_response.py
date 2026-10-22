@@ -19,8 +19,10 @@ import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from cleanlist_ai.models.cohort_summary import CohortSummary
 from cleanlist_ai.models.people_search_result_row import PeopleSearchResultRow
 from cleanlist_ai.models.search_handoff import SearchHandoff
+from cleanlist_ai.models.search_presentation import SearchPresentation
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -35,6 +37,10 @@ class PeopleSearchResponse(BaseModel):
     message: Optional[StrictStr] = None
     entity_kind: Optional[StrictStr] = 'person'
     search_handoff: Optional[SearchHandoff] = None
+    cohort: Optional[CohortSummary] = None
+    presentation: Optional[SearchPresentation] = None
+    criteria_applied: Optional[Dict[str, Any]] = None
+    company_criteria_applied: Optional[Dict[str, Any]] = None
     route: Optional[Dict[str, Any]] = None
     warnings: Optional[List[StrictStr]] = None
     exclusions_applied: Optional[Dict[str, StrictInt]] = None
@@ -44,7 +50,7 @@ class PeopleSearchResponse(BaseModel):
     credits_charged: StrictInt
     truncation_warning: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "search_handoff", "route", "warnings", "exclusions_applied", "results", "total", "cursor", "credits_charged", "truncation_warning"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "search_handoff", "cohort", "presentation", "criteria_applied", "company_criteria_applied", "route", "warnings", "exclusions_applied", "results", "total", "cursor", "credits_charged", "truncation_warning"]
 
     @field_validator('entity_kind')
     def entity_kind_validate_enum(cls, value):
@@ -100,6 +106,12 @@ class PeopleSearchResponse(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of search_handoff
         if self.search_handoff:
             _dict['search_handoff'] = self.search_handoff.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of cohort
+        if self.cohort:
+            _dict['cohort'] = self.cohort.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of presentation
+        if self.presentation:
+            _dict['presentation'] = self.presentation.to_dict()
         # override the default output from pydantic by calling `to_dict()` of each item in results (list)
         _items = []
         if self.results:
@@ -141,6 +153,26 @@ class PeopleSearchResponse(BaseModel):
         # and model_fields_set contains the field
         if self.search_handoff is None and "search_handoff" in self.model_fields_set:
             _dict['search_handoff'] = None
+
+        # set to None if cohort (nullable) is None
+        # and model_fields_set contains the field
+        if self.cohort is None and "cohort" in self.model_fields_set:
+            _dict['cohort'] = None
+
+        # set to None if presentation (nullable) is None
+        # and model_fields_set contains the field
+        if self.presentation is None and "presentation" in self.model_fields_set:
+            _dict['presentation'] = None
+
+        # set to None if criteria_applied (nullable) is None
+        # and model_fields_set contains the field
+        if self.criteria_applied is None and "criteria_applied" in self.model_fields_set:
+            _dict['criteria_applied'] = None
+
+        # set to None if company_criteria_applied (nullable) is None
+        # and model_fields_set contains the field
+        if self.company_criteria_applied is None and "company_criteria_applied" in self.model_fields_set:
+            _dict['company_criteria_applied'] = None
 
         # set to None if route (nullable) is None
         # and model_fields_set contains the field
@@ -186,6 +218,10 @@ class PeopleSearchResponse(BaseModel):
             "message": obj.get("message"),
             "entity_kind": obj.get("entity_kind") if obj.get("entity_kind") is not None else 'person',
             "search_handoff": SearchHandoff.from_dict(obj["search_handoff"]) if obj.get("search_handoff") is not None else None,
+            "cohort": CohortSummary.from_dict(obj["cohort"]) if obj.get("cohort") is not None else None,
+            "presentation": SearchPresentation.from_dict(obj["presentation"]) if obj.get("presentation") is not None else None,
+            "criteria_applied": obj.get("criteria_applied"),
+            "company_criteria_applied": obj.get("company_criteria_applied"),
             "route": obj.get("route"),
             "warnings": obj.get("warnings"),
             "exclusions_applied": obj.get("exclusions_applied"),

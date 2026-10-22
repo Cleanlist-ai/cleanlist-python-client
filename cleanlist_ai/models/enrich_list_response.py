@@ -26,6 +26,7 @@ class EnrichListResponse(BaseModel):
     """
     EnrichListResponse
     """ # noqa: E501
+    crm_note: Optional[StrictStr] = None
     task_id: Optional[StrictStr] = None
     timestamp_ms: Optional[StrictInt] = None
     agent_instructions: Optional[StrictStr] = None
@@ -37,7 +38,7 @@ class EnrichListResponse(BaseModel):
     estimated_cost: StrictInt = Field(description="Recomputed cost for the run, capped at the quote's max_credits.")
     credits_reserved: StrictInt = Field(description="Upfront reservation cap. Pay-for-results: leads with no email/phone found aren't charged, so settle refunds the unused portion. Poll status for the final debit.")
     poll_url: StrictStr = Field(description="Fully-qualified URL to poll for aggregate progress and billing.")
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "workflow_id", "status", "total_leads", "estimated_cost", "credits_reserved", "poll_url"]
+    __properties: ClassVar[List[str]] = ["crm_note", "task_id", "timestamp_ms", "agent_instructions", "usage", "message", "workflow_id", "status", "total_leads", "estimated_cost", "credits_reserved", "poll_url"]
 
     @field_validator('status')
     def status_validate_enum(cls, value):
@@ -85,6 +86,11 @@ class EnrichListResponse(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if crm_note (nullable) is None
+        # and model_fields_set contains the field
+        if self.crm_note is None and "crm_note" in self.model_fields_set:
+            _dict['crm_note'] = None
+
         # set to None if task_id (nullable) is None
         # and model_fields_set contains the field
         if self.task_id is None and "task_id" in self.model_fields_set:
@@ -122,6 +128,7 @@ class EnrichListResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "crm_note": obj.get("crm_note"),
             "task_id": obj.get("task_id"),
             "timestamp_ms": obj.get("timestamp_ms"),
             "agent_instructions": obj.get("agent_instructions"),

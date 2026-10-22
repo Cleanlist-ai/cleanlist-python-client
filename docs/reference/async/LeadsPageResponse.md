@@ -10,6 +10,10 @@ Name | Type | Description | Notes
 **agent_instructions** | **str** |  | [optional] 
 **usage** | **str** |  | [optional] 
 **message** | **str** |  | [optional] 
+**presentation** | [**SearchPresentation**](SearchPresentation.md) |  | [optional] 
+**pending_imports** | [**List[PendingImportRow]**](PendingImportRow.md) |  | [optional] 
+**pending_import_total** | **int** |  | [optional] 
+**pending_import_cursor** | **str** |  | [optional] 
 **list_id** | **str** | Identifier of the list these leads belong to. | 
 **leads** | [**List[LeadRow]**](LeadRow.md) | The page of leads in the list. | 
 **total** | **int** | Total number of leads in the list across all pages. | 

@@ -19,6 +19,7 @@ from cleanlist_ai.aio.models.add_leads_response import AddLeadsResponse
 from cleanlist_ai.aio.models.api_key_info import ApiKeyInfo
 from cleanlist_ai.aio.models.api_keys_response import ApiKeysResponse
 from cleanlist_ai.aio.models.body import Body
+from cleanlist_ai.aio.models.cohort_summary import CohortSummary
 from cleanlist_ai.aio.models.companies_find_start_response import CompaniesFindStartResponse
 from cleanlist_ai.aio.models.companies_find_status_response import CompaniesFindStatusResponse
 from cleanlist_ai.aio.models.company_record import CompanyRecord
@@ -59,6 +60,7 @@ from cleanlist_ai.aio.models.list_detail_response import ListDetailResponse
 from cleanlist_ai.aio.models.list_smart_agents_response import ListSmartAgentsResponse
 from cleanlist_ai.aio.models.list_summary import ListSummary
 from cleanlist_ai.aio.models.lists_page_response import ListsPageResponse
+from cleanlist_ai.aio.models.pending_import_row import PendingImportRow
 from cleanlist_ai.aio.models.people_by_companies_request import PeopleByCompaniesRequest
 from cleanlist_ai.aio.models.people_filters_response import PeopleFiltersResponse
 from cleanlist_ai.aio.models.people_match_evidence import PeopleMatchEvidence
@@ -66,14 +68,18 @@ from cleanlist_ai.aio.models.people_search_criteria import PeopleSearchCriteria
 from cleanlist_ai.aio.models.people_search_request import PeopleSearchRequest
 from cleanlist_ai.aio.models.people_search_response import PeopleSearchResponse
 from cleanlist_ai.aio.models.people_search_result_row import PeopleSearchResultRow
+from cleanlist_ai.aio.models.person_presentation_row import PersonPresentationRow
+from cleanlist_ai.aio.models.presentation_link import PresentationLink
 from cleanlist_ai.aio.models.public_api_error import PublicApiError
 from cleanlist_ai.aio.models.public_api_error_payload import PublicApiErrorPayload
 from cleanlist_ai.aio.models.public_lead_list_update import PublicLeadListUpdate
+from cleanlist_ai.aio.models.raw_person_status import RawPersonStatus
 from cleanlist_ai.aio.models.remove_leads_request import RemoveLeadsRequest
 from cleanlist_ai.aio.models.remove_leads_response import RemoveLeadsResponse
 from cleanlist_ai.aio.models.run_smart_agent_request import RunSmartAgentRequest
 from cleanlist_ai.aio.models.run_smart_agent_response import RunSmartAgentResponse
 from cleanlist_ai.aio.models.search_handoff import SearchHandoff
+from cleanlist_ai.aio.models.search_presentation import SearchPresentation
 from cleanlist_ai.aio.models.single_enrichment_result_read import SingleEnrichmentResultRead
 from cleanlist_ai.aio.models.smart_agent_result_row import SmartAgentResultRow
 from cleanlist_ai.aio.models.smart_agent_results_response import SmartAgentResultsResponse

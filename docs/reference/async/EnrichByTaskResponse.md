@@ -5,6 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**crm_note** | **str** |  | [optional] 
 **task_id** | **str** |  | [optional] 
 **timestamp_ms** | **int** |  | [optional] 
 **agent_instructions** | **str** |  | [optional] 

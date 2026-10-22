@@ -5,6 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**crm_note** | **str** |  | [optional] 
 **quote_id** | **str** | HMAC-signed quote handle (&#x60;qte_&lt;kid&gt;_&lt;issued_at&gt;_&lt;sig&gt;&#x60;) that the paired paid tool must present at execution time. Single-use and bound to the canonical request (tool, list/filters, scope, row_count, org). | 
 **expires_at** | **int** | Unix epoch SECONDS at which the quote expires (issue time + &#x60;CLEANLIST_QUOTE_TTL_SECONDS&#x60;, 5 min default). Re-estimate after this to obtain a fresh quote. | 
 **estimated_cost** | **int** | Credits this operation will cost — the authoritative signed spend cap. Execution rejects (&#x60;spend_cap_exceeded&#x60;) if the recomputed cost would exceed it. | 

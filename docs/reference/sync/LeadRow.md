@@ -13,6 +13,8 @@ Name | Type | Description | Notes
 **phone** | **str** |  | [optional] 
 **title** | **str** |  | [optional] 
 **company** | **str** |  | [optional] 
+**company_id** | **str** |  | [optional] 
+**domain** | **str** |  | [optional] 
 **location** | **str** |  | [optional] 
 **linkedin_url** | **str** |  | [optional] 
 **provider** | **str** |  | [optional] 

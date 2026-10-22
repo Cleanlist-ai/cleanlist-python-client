@@ -34,10 +34,12 @@ class LeadRow(BaseModel):
     phone: Optional[StrictStr] = None
     title: Optional[StrictStr] = None
     company: Optional[StrictStr] = None
+    company_id: Optional[StrictStr] = None
+    domain: Optional[StrictStr] = None
     location: Optional[StrictStr] = None
     linkedin_url: Optional[StrictStr] = None
     provider: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["lead_id", "first_name", "last_name", "full_name", "email", "phone", "title", "company", "location", "linkedin_url", "provider"]
+    __properties: ClassVar[List[str]] = ["lead_id", "first_name", "last_name", "full_name", "email", "phone", "title", "company", "company_id", "domain", "location", "linkedin_url", "provider"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -113,6 +115,16 @@ class LeadRow(BaseModel):
         if self.company is None and "company" in self.model_fields_set:
             _dict['company'] = None
 
+        # set to None if company_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.company_id is None and "company_id" in self.model_fields_set:
+            _dict['company_id'] = None
+
+        # set to None if domain (nullable) is None
+        # and model_fields_set contains the field
+        if self.domain is None and "domain" in self.model_fields_set:
+            _dict['domain'] = None
+
         # set to None if location (nullable) is None
         # and model_fields_set contains the field
         if self.location is None and "location" in self.model_fields_set:
@@ -148,6 +160,8 @@ class LeadRow(BaseModel):
             "phone": obj.get("phone"),
             "title": obj.get("title"),
             "company": obj.get("company"),
+            "company_id": obj.get("company_id"),
+            "domain": obj.get("domain"),
             "location": obj.get("location"),
             "linkedin_url": obj.get("linkedin_url"),
             "provider": obj.get("provider")

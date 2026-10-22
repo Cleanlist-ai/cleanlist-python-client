@@ -29,7 +29,7 @@ class SmartAgentRun(BaseModel):
     task_id: StrictStr = Field(description="Run id for this smart-agent run — poll it via GET /smart-agents/{id}.")
     list_id: StrictStr = Field(description="UUID of the lead list this run targeted.")
     column_name: StrictStr = Field(description="Name of the column the run wrote its output to.")
-    agent_type: StrictStr = Field(description="Agent / smart-column type the run executed as (e.g. `custom_ai`, `cold_intro_email`).")
+    agent_type: StrictStr = Field(description="The `agent_type` the run was started with (e.g. `custom_ai`, `cold_intro_email`, `title_normalizer`), or the smart-column type for runs started outside POST /smart-agents/run.")
     status: StrictStr = Field(description="Lifecycle state: `pending`, `processing`, `completed`, or `failed`.")
     total: Optional[StrictInt] = Field(default=0, description="Total leads scheduled for this run.")
     processed: Optional[StrictInt] = Field(default=0, description="Leads processed so far (succeeded + failed).")
