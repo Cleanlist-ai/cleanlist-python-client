@@ -11,18 +11,21 @@ Name | Type | Description | Notes
 **usage** | **str** |  | [optional] 
 **message** | **str** |  | [optional] 
 **workflow_id** | **str** | The workflow (or cohort task) handle being polled. | 
-**status** | **str** | Outer workflow status: e.g. &#39;pending&#39;, &#39;running&#39;, &#39;completed&#39;, &#39;failed&#39;, &#39;cancelled&#39;. | 
+**status** | **str** | Outer workflow status: e.g. &#39;pending&#39;, &#39;running&#39;, &#39;completed&#39;, &#39;failed&#39;, &#39;cancelled&#39;. A single-person run whose result failed (no match, opted out) is &#39;failed&#39;; result.failure_kind says why. | 
 **progress** | **int** |  | [optional] 
 **total** | **int** |  | [optional] 
 **processed** | **int** |  | [optional] 
 **completed** | **int** |  | [optional] 
 **failed** | **int** |  | [optional] 
+**opted_out** | **int** |  | [optional] 
 **enrichment_type** | **str** |  | [optional] 
 **lead_list_id** | **str** |  | [optional] 
 **summary** | **object** |  | [optional] 
 **refund_status** | **str** |  | [optional] 
 **refund_message** | **str** |  | [optional] 
 **result** | [**SingleEnrichmentResultRead**](SingleEnrichmentResultRead.md) |  | [optional] 
+**results** | [**List[BulkContactResult]**](BulkContactResult.md) |  | [optional] 
+**results_next_offset** | **int** |  | [optional] 
 **credits_charged** | **float** |  | [optional] 
 **credits_refunded** | **int** |  | [optional] 
 

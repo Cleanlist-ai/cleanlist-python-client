@@ -68,8 +68,6 @@ class CompanySearchCriteria(BaseModel):
     ipo_date_after: Optional[StrictStr] = Field(default='', description="IPO date floor as YYYY-MM-DD.", alias="ipoDateAfter")
     last_funding_round_amount_min: Optional[StrictStr] = Field(default='', description="Minimum size of the last funding round in USD.", alias="lastFundingRoundAmountMin")
     last_funding_round_amount_max: Optional[StrictStr] = Field(default='', description="Maximum size of the last funding round in USD.", alias="lastFundingRoundAmountMax")
-    valuation_min: Optional[StrictStr] = Field(default='', description="Minimum Crunchbase valuation in USD.", alias="valuationMin")
-    valuation_max: Optional[StrictStr] = Field(default='', description="Maximum Crunchbase valuation in USD.", alias="valuationMax")
     bootstrapped_only: Optional[StrictBool] = Field(default=False, description="Only companies with no disclosed investment.", alias="bootstrappedOnly")
     acquired_only: Optional[StrictBool] = Field(default=False, description="Only acquired companies.", alias="acquiredOnly")
     funding_round_types_exclude: Optional[List[StrictStr]] = Field(default=None, description="Last funding round labels to exclude.", alias="fundingRoundTypesExclude")
@@ -87,7 +85,7 @@ class CompanySearchCriteria(BaseModel):
     exclude_in_cleanlist: Optional[StrictStr] = Field(default='off', description="Skip companies already on the user's lists: off, any list they can open, or specific lists.", alias="excludeInCleanlist")
     exclude_in_cleanlist_list_ids: Optional[List[StrictStr]] = Field(default=None, description="Lead list ids the list scope resolves against.", alias="excludeInCleanlistListIds")
     crm_filter_sections: Optional[CrmFilterSections] = Field(default=None, description="Per-CRM exclude clauses resolved by the exclusions step; conditions that exclude accounts only.", alias="crmFilterSections")
-    __properties: ClassVar[List[str]] = ["companyName", "companyNameMatchType", "domain", "industriesInclude", "headcountRanges", "revenueMin", "revenueMax", "yearFoundedMin", "yearFoundedMax", "companyType", "fundingRoundTypes", "fundingAmountMin", "growthMin", "growthMax", "industriesExclude", "headcountRangesExclude", "companyTypeExclude", "hqCountriesIso3", "hqCountriesIso3Exclude", "largestHeadcountCountriesIso3", "hqStates", "hqStatesExclude", "hqCities", "hqCitiesExclude", "linkedinCategoriesInclude", "crunchbaseCategoriesInclude", "crunchbaseCategoriesExclude", "stockListings", "headcountLatestMin", "headcountLatestMax", "growth1mMin", "growth3mMin", "growth12mMin", "followersMin", "followersGrowth6mMin", "followersGrowth12mMin", "lastFundingDateAfter", "ipoDateAfter", "lastFundingRoundAmountMin", "lastFundingRoundAmountMax", "valuationMin", "valuationMax", "bootstrappedOnly", "acquiredOnly", "fundingRoundTypesExclude", "investorsInclude", "investorsExclude", "stockSymbols", "domainsList", "companyNamesList", "twitterHandle", "descriptionKeyword", "updatedAfter", "compositeMode", "workforceRules", "excludeCompanyDomains", "excludeInCleanlist", "excludeInCleanlistListIds", "crmFilterSections"]
+    __properties: ClassVar[List[str]] = ["companyName", "companyNameMatchType", "domain", "industriesInclude", "headcountRanges", "revenueMin", "revenueMax", "yearFoundedMin", "yearFoundedMax", "companyType", "fundingRoundTypes", "fundingAmountMin", "growthMin", "growthMax", "industriesExclude", "headcountRangesExclude", "companyTypeExclude", "hqCountriesIso3", "hqCountriesIso3Exclude", "largestHeadcountCountriesIso3", "hqStates", "hqStatesExclude", "hqCities", "hqCitiesExclude", "linkedinCategoriesInclude", "crunchbaseCategoriesInclude", "crunchbaseCategoriesExclude", "stockListings", "headcountLatestMin", "headcountLatestMax", "growth1mMin", "growth3mMin", "growth12mMin", "followersMin", "followersGrowth6mMin", "followersGrowth12mMin", "lastFundingDateAfter", "ipoDateAfter", "lastFundingRoundAmountMin", "lastFundingRoundAmountMax", "bootstrappedOnly", "acquiredOnly", "fundingRoundTypesExclude", "investorsInclude", "investorsExclude", "stockSymbols", "domainsList", "companyNamesList", "twitterHandle", "descriptionKeyword", "updatedAfter", "compositeMode", "workforceRules", "excludeCompanyDomains", "excludeInCleanlist", "excludeInCleanlistListIds", "crmFilterSections"]
 
     @field_validator('company_name_match_type')
     def company_name_match_type_validate_enum(cls, value):
@@ -210,8 +208,6 @@ class CompanySearchCriteria(BaseModel):
             "ipoDateAfter": obj.get("ipoDateAfter") if obj.get("ipoDateAfter") is not None else '',
             "lastFundingRoundAmountMin": obj.get("lastFundingRoundAmountMin") if obj.get("lastFundingRoundAmountMin") is not None else '',
             "lastFundingRoundAmountMax": obj.get("lastFundingRoundAmountMax") if obj.get("lastFundingRoundAmountMax") is not None else '',
-            "valuationMin": obj.get("valuationMin") if obj.get("valuationMin") is not None else '',
-            "valuationMax": obj.get("valuationMax") if obj.get("valuationMax") is not None else '',
             "bootstrappedOnly": obj.get("bootstrappedOnly") if obj.get("bootstrappedOnly") is not None else False,
             "acquiredOnly": obj.get("acquiredOnly") if obj.get("acquiredOnly") is not None else False,
             "fundingRoundTypesExclude": obj.get("fundingRoundTypesExclude"),

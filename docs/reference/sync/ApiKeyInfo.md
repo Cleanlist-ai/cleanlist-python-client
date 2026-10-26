@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **scopes** | **List[Optional[str]]** | Permission scopes carried by this key. Scopes are granted per-USER today, so every key the caller owns shares the caller&#39;s scopes. | 
 **created_at** | **str** |  | [optional] 
 **last_used_at** | **str** |  | [optional] 
+**expires_at** | **str** |  | [optional] 
 **is_active** | **bool** | Whether the key is currently active. Revoked keys report false. | 
 
 ## Example

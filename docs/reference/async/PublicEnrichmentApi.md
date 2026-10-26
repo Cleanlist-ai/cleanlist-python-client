@@ -128,7 +128,7 @@ CompanyDB single-record lookup inline (no Temporal workflow, no
 billing a flat 1 credit that settles before the response returns. Pass
 any of `domain` (most reliable), `company_id`, `company_name`, or
 `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis
-cache) and falls back to a `company_name` fuzzy match when the symbol is
+cache) and falls back to an exact `company_name` match when the symbol is
 unknown. `quote_id` is optional and, when present, verified and redeemed.
 
 **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
@@ -424,7 +424,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **enrichment_status**
-> WorkflowStatusResponse enrichment_status(workflow_id)
+> WorkflowStatusResponse enrichment_status(workflow_id, include_results=include_results, results_offset=results_offset, results_limit=results_limit)
 
 Poll an enrichment workflow
 
@@ -437,8 +437,12 @@ accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR
 an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the
 workflow bound at dispatch so the agent can keep using the one handle it
 already has. Terminal single-lead runs include the inline enriched `result`;
-bulk runs report aggregate counters instead. When a prepaid-via-MCP run
-ends in failure, `refund_status` surfaces `pending_review` (credits are
+bulk runs report aggregate counters, plus per-contact `results` (status,
+failure reason and the saved lead with email, LinkedIn URL and provider)
+when polled with `include_results=true`, paged by `results_offset` /
+`results_limit`. Per-contact records are kept for 24 hours; after that
+read the destination list via `GET /lead-lists/{id}/leads`. When a
+prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are
 not auto-refunded).
 
 **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
@@ -474,10 +478,13 @@ async with cleanlist_ai.aio.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = cleanlist_ai.aio.PublicEnrichmentApi(api_client)
     workflow_id = 'workflow_id_example' # str | 
+    include_results = False # bool | Bulk runs: also return per-contact `results` (one page). (optional) (default to False)
+    results_offset = 0 # int | First contact index. (optional) (default to 0)
+    results_limit = 100 # int | Page size. (optional) (default to 100)
 
     try:
         # Poll an enrichment workflow
-        api_response = await api_instance.enrichment_status(workflow_id)
+        api_response = await api_instance.enrichment_status(workflow_id, include_results=include_results, results_offset=results_offset, results_limit=results_limit)
         print("The response of PublicEnrichmentApi->enrichment_status:\n")
         pprint(api_response)
     except Exception as e:
@@ -492,6 +499,9 @@ async with cleanlist_ai.aio.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **workflow_id** | **str**|  | 
+ **include_results** | **bool**| Bulk runs: also return per-contact &#x60;results&#x60; (one page). | [optional] [default to False]
+ **results_offset** | **int**| First contact index. | [optional] [default to 0]
+ **results_limit** | **int**| Page size. | [optional] [default to 100]
 
 ### Return type
 

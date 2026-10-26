@@ -19,6 +19,7 @@ from cleanlist_ai.aio.models.add_leads_response import AddLeadsResponse
 from cleanlist_ai.aio.models.api_key_info import ApiKeyInfo
 from cleanlist_ai.aio.models.api_keys_response import ApiKeysResponse
 from cleanlist_ai.aio.models.body import Body
+from cleanlist_ai.aio.models.bulk_contact_result import BulkContactResult
 from cleanlist_ai.aio.models.cohort_summary import CohortSummary
 from cleanlist_ai.aio.models.companies_find_start_response import CompaniesFindStartResponse
 from cleanlist_ai.aio.models.companies_find_status_response import CompaniesFindStatusResponse

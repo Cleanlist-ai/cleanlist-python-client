@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional, Union
+from cleanlist_ai.aio.models.bulk_contact_result import BulkContactResult
 from cleanlist_ai.aio.models.single_enrichment_result_read import SingleEnrichmentResultRead
 from typing import Optional, Set
 from typing_extensions import Self
@@ -33,22 +34,25 @@ class WorkflowStatusResponse(BaseModel):
     usage: Optional[StrictStr] = None
     message: Optional[StrictStr] = None
     workflow_id: StrictStr = Field(description="The workflow (or cohort task) handle being polled.")
-    status: StrictStr = Field(description="Outer workflow status: e.g. 'pending', 'running', 'completed', 'failed', 'cancelled'.")
+    status: StrictStr = Field(description="Outer workflow status: e.g. 'pending', 'running', 'completed', 'failed', 'cancelled'. A single-person run whose result failed (no match, opted out) is 'failed'; result.failure_kind says why.")
     progress: Optional[StrictInt] = None
     total: Optional[StrictInt] = None
     processed: Optional[StrictInt] = None
     completed: Optional[StrictInt] = None
     failed: Optional[StrictInt] = None
+    opted_out: Optional[StrictInt] = None
     enrichment_type: Optional[StrictStr] = None
     lead_list_id: Optional[StrictStr] = None
     summary: Optional[Dict[str, Any]] = None
     refund_status: Optional[StrictStr] = None
     refund_message: Optional[StrictStr] = None
     result: Optional[SingleEnrichmentResultRead] = None
+    results: Optional[List[BulkContactResult]] = None
+    results_next_offset: Optional[StrictInt] = None
     credits_charged: Optional[Union[StrictFloat, StrictInt]] = None
     credits_refunded: Optional[StrictInt] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "workflow_id", "status", "progress", "total", "processed", "completed", "failed", "enrichment_type", "lead_list_id", "summary", "refund_status", "refund_message", "result", "credits_charged", "credits_refunded"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "workflow_id", "status", "progress", "total", "processed", "completed", "failed", "opted_out", "enrichment_type", "lead_list_id", "summary", "refund_status", "refund_message", "result", "results", "results_next_offset", "credits_charged", "credits_refunded"]
 
     @field_validator('refund_status')
     def refund_status_validate_enum(cls, value):
@@ -104,6 +108,13 @@ class WorkflowStatusResponse(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of result
         if self.result:
             _dict['result'] = self.result.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each item in results (list)
+        _items = []
+        if self.results:
+            for _item_results in self.results:
+                if _item_results:
+                    _items.append(_item_results.to_dict())
+            _dict['results'] = _items
         # puts key-value pairs in additional_properties in the top level
         if self.additional_properties is not None:
             for _key, _value in self.additional_properties.items():
@@ -159,6 +170,11 @@ class WorkflowStatusResponse(BaseModel):
         if self.failed is None and "failed" in self.model_fields_set:
             _dict['failed'] = None
 
+        # set to None if opted_out (nullable) is None
+        # and model_fields_set contains the field
+        if self.opted_out is None and "opted_out" in self.model_fields_set:
+            _dict['opted_out'] = None
+
         # set to None if enrichment_type (nullable) is None
         # and model_fields_set contains the field
         if self.enrichment_type is None and "enrichment_type" in self.model_fields_set:
@@ -188,6 +204,16 @@ class WorkflowStatusResponse(BaseModel):
         # and model_fields_set contains the field
         if self.result is None and "result" in self.model_fields_set:
             _dict['result'] = None
+
+        # set to None if results (nullable) is None
+        # and model_fields_set contains the field
+        if self.results is None and "results" in self.model_fields_set:
+            _dict['results'] = None
+
+        # set to None if results_next_offset (nullable) is None
+        # and model_fields_set contains the field
+        if self.results_next_offset is None and "results_next_offset" in self.model_fields_set:
+            _dict['results_next_offset'] = None
 
         # set to None if credits_charged (nullable) is None
         # and model_fields_set contains the field
@@ -223,12 +249,15 @@ class WorkflowStatusResponse(BaseModel):
             "processed": obj.get("processed"),
             "completed": obj.get("completed"),
             "failed": obj.get("failed"),
+            "opted_out": obj.get("opted_out"),
             "enrichment_type": obj.get("enrichment_type"),
             "lead_list_id": obj.get("lead_list_id"),
             "summary": obj.get("summary"),
             "refund_status": obj.get("refund_status"),
             "refund_message": obj.get("refund_message"),
             "result": SingleEnrichmentResultRead.from_dict(obj["result"]) if obj.get("result") is not None else None,
+            "results": [BulkContactResult.from_dict(_item) for _item in obj["results"]] if obj.get("results") is not None else None,
+            "results_next_offset": obj.get("results_next_offset"),
             "credits_charged": obj.get("credits_charged"),
             "credits_refunded": obj.get("credits_refunded")
         })

@@ -46,8 +46,6 @@ Name | Type | Description | Notes
 **ipo_date_after** | **str** | IPO date floor as YYYY-MM-DD. | [optional] [default to '']
 **last_funding_round_amount_min** | **str** | Minimum size of the last funding round in USD. | [optional] [default to '']
 **last_funding_round_amount_max** | **str** | Maximum size of the last funding round in USD. | [optional] [default to '']
-**valuation_min** | **str** | Minimum Crunchbase valuation in USD. | [optional] [default to '']
-**valuation_max** | **str** | Maximum Crunchbase valuation in USD. | [optional] [default to '']
 **bootstrapped_only** | **bool** | Only companies with no disclosed investment. | [optional] [default to False]
 **acquired_only** | **bool** | Only acquired companies. | [optional] [default to False]
 **funding_round_types_exclude** | **List[str]** | Last funding round labels to exclude. | [optional] 
