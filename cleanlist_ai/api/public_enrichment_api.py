@@ -16,7 +16,9 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import StrictStr
+from pydantic import Field, StrictBool, StrictStr
+from typing import Optional
+from typing_extensions import Annotated
 from cleanlist_ai.models.enrich_by_task_request import EnrichByTaskRequest
 from cleanlist_ai.models.enrich_by_task_response import EnrichByTaskResponse
 from cleanlist_ai.models.enrich_company_request import EnrichCompanyRequest
@@ -365,7 +367,7 @@ class PublicEnrichmentApi:
     ) -> EnrichCompanyResponse:
         """Enrich a company
 
-        Look up firmographics for a single company and return the full record synchronously.  Unlike person enrichment, this path is synchronous — it performs a CompanyDB single-record lookup inline (no Temporal workflow, no `workflow_id`) and returns the enriched `CompanyRecord` in the response, billing a flat 1 credit that settles before the response returns. Pass any of `domain` (most reliable), `company_id`, `company_name`, or `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis cache) and falls back to a `company_name` fuzzy match when the symbol is unknown. `quote_id` is optional and, when present, verified and redeemed.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment-types **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
+        Look up firmographics for a single company and return the full record synchronously.  Unlike person enrichment, this path is synchronous — it performs a CompanyDB single-record lookup inline (no Temporal workflow, no `workflow_id`) and returns the enriched `CompanyRecord` in the response, billing a flat 1 credit that settles before the response returns. Pass any of `domain` (most reliable), `company_id`, `company_name`, or `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis cache) and falls back to an exact `company_name` match when the symbol is unknown. `quote_id` is optional and, when present, verified and redeemed.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment-types **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
 
         :param enrich_company_request: (required)
         :type enrich_company_request: EnrichCompanyRequest
@@ -441,7 +443,7 @@ class PublicEnrichmentApi:
     ) -> ApiResponse[EnrichCompanyResponse]:
         """Enrich a company
 
-        Look up firmographics for a single company and return the full record synchronously.  Unlike person enrichment, this path is synchronous — it performs a CompanyDB single-record lookup inline (no Temporal workflow, no `workflow_id`) and returns the enriched `CompanyRecord` in the response, billing a flat 1 credit that settles before the response returns. Pass any of `domain` (most reliable), `company_id`, `company_name`, or `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis cache) and falls back to a `company_name` fuzzy match when the symbol is unknown. `quote_id` is optional and, when present, verified and redeemed.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment-types **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
+        Look up firmographics for a single company and return the full record synchronously.  Unlike person enrichment, this path is synchronous — it performs a CompanyDB single-record lookup inline (no Temporal workflow, no `workflow_id`) and returns the enriched `CompanyRecord` in the response, billing a flat 1 credit that settles before the response returns. Pass any of `domain` (most reliable), `company_id`, `company_name`, or `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis cache) and falls back to an exact `company_name` match when the symbol is unknown. `quote_id` is optional and, when present, verified and redeemed.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment-types **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
 
         :param enrich_company_request: (required)
         :type enrich_company_request: EnrichCompanyRequest
@@ -517,7 +519,7 @@ class PublicEnrichmentApi:
     ) -> RESTResponseType:
         """Enrich a company
 
-        Look up firmographics for a single company and return the full record synchronously.  Unlike person enrichment, this path is synchronous — it performs a CompanyDB single-record lookup inline (no Temporal workflow, no `workflow_id`) and returns the enriched `CompanyRecord` in the response, billing a flat 1 credit that settles before the response returns. Pass any of `domain` (most reliable), `company_id`, `company_name`, or `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis cache) and falls back to a `company_name` fuzzy match when the symbol is unknown. `quote_id` is optional and, when present, verified and redeemed.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment-types **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
+        Look up firmographics for a single company and return the full record synchronously.  Unlike person enrichment, this path is synchronous — it performs a CompanyDB single-record lookup inline (no Temporal workflow, no `workflow_id`) and returns the enriched `CompanyRecord` in the response, billing a flat 1 credit that settles before the response returns. Pass any of `domain` (most reliable), `company_id`, `company_name`, or `company_ticker`; a ticker is resolved to a domain via Finnhub (24h Redis cache) and falls back to an exact `company_name` match when the symbol is unknown. `quote_id` is optional and, when present, verified and redeemed.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment-types **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
 
         :param enrich_company_request: (required)
         :type enrich_company_request: EnrichCompanyRequest
@@ -1253,6 +1255,9 @@ class PublicEnrichmentApi:
     def enrichment_status(
         self,
         workflow_id: StrictStr,
+        include_results: Annotated[Optional[StrictBool], Field(description="Bulk runs: also return per-contact `results` (one page).")] = None,
+        results_offset: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="First contact index.")] = None,
+        results_limit: Annotated[Optional[Annotated[int, Field(le=500, strict=True, ge=1)]], Field(description="Page size.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1268,10 +1273,16 @@ class PublicEnrichmentApi:
     ) -> WorkflowStatusResponse:
         """Poll an enrichment workflow
 
-        Poll the status, progress, and settled billing of an enrichment workflow started by `enrich_person`, `enrich_list`, or `enrich_by_task`.  This read is free and idempotent — call it repeatedly until `status` reaches a terminal state (`completed` / `failed` / `cancelled`). It accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the workflow bound at dispatch so the agent can keep using the one handle it already has. Terminal single-lead runs include the inline enriched `result`; bulk runs report aggregate counters instead. When a prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are not auto-refunded).  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
+        Poll the status, progress, and settled billing of an enrichment workflow started by `enrich_person`, `enrich_list`, or `enrich_by_task`.  This read is free and idempotent — call it repeatedly until `status` reaches a terminal state (`completed` / `failed` / `cancelled`). It accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the workflow bound at dispatch so the agent can keep using the one handle it already has. Terminal single-lead runs include the inline enriched `result`; bulk runs report aggregate counters, plus per-contact `results` (status, failure reason and the saved lead with email, LinkedIn URL and provider) when polled with `include_results=true`, paged by `results_offset` / `results_limit`. Per-contact records are kept for 24 hours; after that read the destination list via `GET /lead-lists/{id}/leads`. When a prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are not auto-refunded).  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
 
         :param workflow_id: (required)
         :type workflow_id: str
+        :param include_results: Bulk runs: also return per-contact `results` (one page).
+        :type include_results: bool
+        :param results_offset: First contact index.
+        :type results_offset: int
+        :param results_limit: Page size.
+        :type results_limit: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1296,6 +1307,9 @@ class PublicEnrichmentApi:
 
         _param = self._enrichment_status_serialize(
             workflow_id=workflow_id,
+            include_results=include_results,
+            results_offset=results_offset,
+            results_limit=results_limit,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1329,6 +1343,9 @@ class PublicEnrichmentApi:
     def enrichment_status_with_http_info(
         self,
         workflow_id: StrictStr,
+        include_results: Annotated[Optional[StrictBool], Field(description="Bulk runs: also return per-contact `results` (one page).")] = None,
+        results_offset: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="First contact index.")] = None,
+        results_limit: Annotated[Optional[Annotated[int, Field(le=500, strict=True, ge=1)]], Field(description="Page size.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1344,10 +1361,16 @@ class PublicEnrichmentApi:
     ) -> ApiResponse[WorkflowStatusResponse]:
         """Poll an enrichment workflow
 
-        Poll the status, progress, and settled billing of an enrichment workflow started by `enrich_person`, `enrich_list`, or `enrich_by_task`.  This read is free and idempotent — call it repeatedly until `status` reaches a terminal state (`completed` / `failed` / `cancelled`). It accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the workflow bound at dispatch so the agent can keep using the one handle it already has. Terminal single-lead runs include the inline enriched `result`; bulk runs report aggregate counters instead. When a prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are not auto-refunded).  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
+        Poll the status, progress, and settled billing of an enrichment workflow started by `enrich_person`, `enrich_list`, or `enrich_by_task`.  This read is free and idempotent — call it repeatedly until `status` reaches a terminal state (`completed` / `failed` / `cancelled`). It accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the workflow bound at dispatch so the agent can keep using the one handle it already has. Terminal single-lead runs include the inline enriched `result`; bulk runs report aggregate counters, plus per-contact `results` (status, failure reason and the saved lead with email, LinkedIn URL and provider) when polled with `include_results=true`, paged by `results_offset` / `results_limit`. Per-contact records are kept for 24 hours; after that read the destination list via `GET /lead-lists/{id}/leads`. When a prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are not auto-refunded).  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
 
         :param workflow_id: (required)
         :type workflow_id: str
+        :param include_results: Bulk runs: also return per-contact `results` (one page).
+        :type include_results: bool
+        :param results_offset: First contact index.
+        :type results_offset: int
+        :param results_limit: Page size.
+        :type results_limit: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1372,6 +1395,9 @@ class PublicEnrichmentApi:
 
         _param = self._enrichment_status_serialize(
             workflow_id=workflow_id,
+            include_results=include_results,
+            results_offset=results_offset,
+            results_limit=results_limit,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1405,6 +1431,9 @@ class PublicEnrichmentApi:
     def enrichment_status_without_preload_content(
         self,
         workflow_id: StrictStr,
+        include_results: Annotated[Optional[StrictBool], Field(description="Bulk runs: also return per-contact `results` (one page).")] = None,
+        results_offset: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="First contact index.")] = None,
+        results_limit: Annotated[Optional[Annotated[int, Field(le=500, strict=True, ge=1)]], Field(description="Page size.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1420,10 +1449,16 @@ class PublicEnrichmentApi:
     ) -> RESTResponseType:
         """Poll an enrichment workflow
 
-        Poll the status, progress, and settled billing of an enrichment workflow started by `enrich_person`, `enrich_list`, or `enrich_by_task`.  This read is free and idempotent — call it repeatedly until `status` reaches a terminal state (`completed` / `failed` / `cancelled`). It accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the workflow bound at dispatch so the agent can keep using the one handle it already has. Terminal single-lead runs include the inline enriched `result`; bulk runs report aggregate counters instead. When a prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are not auto-refunded).  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
+        Poll the status, progress, and settled billing of an enrichment workflow started by `enrich_person`, `enrich_list`, or `enrich_by_task`.  This read is free and idempotent — call it repeatedly until `status` reaches a terminal state (`completed` / `failed` / `cancelled`). It accepts EITHER a `workflow_id` (e.g. `enrich-...` / `bulk-enrich-...`) OR an MCPTask cohort `task_id` (`cl-task_...`), resolving the latter to the workflow bound at dispatch so the agent can keep using the one handle it already has. Terminal single-lead runs include the inline enriched `result`; bulk runs report aggregate counters, plus per-contact `results` (status, failure reason and the saved lead with email, LinkedIn URL and provider) when polled with `include_results=true`, paged by `results_offset` / `results_limit`. Per-contact records are kept for 24 hours; after that read the destination list via `GET /lead-lists/{id}/leads`. When a prepaid-via-MCP run ends in failure, `refund_status` surfaces `pending_review` (credits are not auto-refunded).  **📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
 
         :param workflow_id: (required)
         :type workflow_id: str
+        :param include_results: Bulk runs: also return per-contact `results` (one page).
+        :type include_results: bool
+        :param results_offset: First contact index.
+        :type results_offset: int
+        :param results_limit: Page size.
+        :type results_limit: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1448,6 +1483,9 @@ class PublicEnrichmentApi:
 
         _param = self._enrichment_status_serialize(
             workflow_id=workflow_id,
+            include_results=include_results,
+            results_offset=results_offset,
+            results_limit=results_limit,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1476,6 +1514,9 @@ class PublicEnrichmentApi:
     def _enrichment_status_serialize(
         self,
         workflow_id,
+        include_results,
+        results_offset,
+        results_limit,
         _request_auth,
         _content_type,
         _headers,
@@ -1500,6 +1541,18 @@ class PublicEnrichmentApi:
         if workflow_id is not None:
             _path_params['workflow_id'] = workflow_id
         # process the query parameters
+        if include_results is not None:
+            
+            _query_params.append(('include_results', include_results))
+            
+        if results_offset is not None:
+            
+            _query_params.append(('results_offset', results_offset))
+            
+        if results_limit is not None:
+            
+            _query_params.append(('results_limit', results_limit))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter

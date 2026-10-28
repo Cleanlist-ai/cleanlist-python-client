@@ -39,6 +39,7 @@ __all__ = [
     "ApiKeyInfo",
     "ApiKeysResponse",
     "Body",
+    "BulkContactResult",
     "CohortSummary",
     "CompaniesFindStartResponse",
     "CompaniesFindStatusResponse",
@@ -140,6 +141,7 @@ from cleanlist_ai.aio.models.add_leads_response import AddLeadsResponse as AddLe
 from cleanlist_ai.aio.models.api_key_info import ApiKeyInfo as ApiKeyInfo
 from cleanlist_ai.aio.models.api_keys_response import ApiKeysResponse as ApiKeysResponse
 from cleanlist_ai.aio.models.body import Body as Body
+from cleanlist_ai.aio.models.bulk_contact_result import BulkContactResult as BulkContactResult
 from cleanlist_ai.aio.models.cohort_summary import CohortSummary as CohortSummary
 from cleanlist_ai.aio.models.companies_find_start_response import CompaniesFindStartResponse as CompaniesFindStartResponse
 from cleanlist_ai.aio.models.companies_find_status_response import CompaniesFindStatusResponse as CompaniesFindStatusResponse

@@ -33,9 +33,10 @@ class ApiKeyInfo(BaseModel):
     scopes: List[Optional[StrictStr]] = Field(description="Permission scopes carried by this key. Scopes are granted per-USER today, so every key the caller owns shares the caller's scopes.")
     created_at: Optional[StrictStr] = None
     last_used_at: Optional[StrictStr] = None
+    expires_at: Optional[StrictStr] = None
     is_active: StrictBool = Field(description="Whether the key is currently active. Revoked keys report false.")
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["key_id", "key_prefix", "key_last4", "name", "scopes", "created_at", "last_used_at", "is_active"]
+    __properties: ClassVar[List[str]] = ["key_id", "key_prefix", "key_last4", "name", "scopes", "created_at", "last_used_at", "expires_at", "is_active"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -98,6 +99,11 @@ class ApiKeyInfo(BaseModel):
         if self.last_used_at is None and "last_used_at" in self.model_fields_set:
             _dict['last_used_at'] = None
 
+        # set to None if expires_at (nullable) is None
+        # and model_fields_set contains the field
+        if self.expires_at is None and "expires_at" in self.model_fields_set:
+            _dict['expires_at'] = None
+
         return _dict
 
     @classmethod
@@ -117,6 +123,7 @@ class ApiKeyInfo(BaseModel):
             "scopes": obj.get("scopes"),
             "created_at": obj.get("created_at"),
             "last_used_at": obj.get("last_used_at"),
+            "expires_at": obj.get("expires_at"),
             "is_active": obj.get("is_active")
         })
         # store additional fields in additional_properties

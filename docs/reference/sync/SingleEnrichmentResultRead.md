@@ -19,6 +19,8 @@ Name | Type | Description | Notes
 **company** | **str** |  | [optional] 
 **enrichment_type** | **str** |  | [optional] 
 **provider** | **str** |  | [optional] 
+**failure_kind** | **str** |  | [optional] 
+**error** | **str** |  | [optional] 
 
 ## Example
 
