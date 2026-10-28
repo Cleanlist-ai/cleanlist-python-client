@@ -19,7 +19,7 @@ cd "$ROOT"
 RAW_SPEC="openapi/cleanse-api-v2.oas.json"
 BUILD="$ROOT/.build"
 GEN_SPEC="$BUILD/spec.json"
-PKG_VERSION="${PKG_VERSION:-3.0.0}"
+PKG_VERSION="${PKG_VERSION:-4.0.0}"
 
 PYTHON="${PYTHON:-python3}"
 GEN=(npx --yes @openapitools/openapi-generator-cli generate)
