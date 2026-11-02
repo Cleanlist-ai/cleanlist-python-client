@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **company_name_match_type** | **str** | How company_name matches: contains (substring), exact, or similar (word-order-free fuzzy). | [optional] [default to 'contains']
 **domain** | **str** | Company website domain; a pasted URL is reduced to its host. | [optional] [default to '']
 **industries_include** | **List[str]** | LinkedIn industries or industry group names to include. | [optional] 
+**naics_codes** | **List[str]** | NAICS 2022 codes to include, matched against the company&#39;s primary NAICS code. A six-digit code matches exactly; a shorter code (5412, 54) matches every code under it. | [optional] 
 **headcount_ranges** | **List[str]** | Headcount buckets to include (1-10 through 10001+), OR-ed. | [optional] 
 **revenue_min** | **str** | Minimum estimated annual revenue in USD. | [optional] [default to '']
 **revenue_max** | **str** | Maximum estimated annual revenue in USD. | [optional] [default to '']

@@ -41,8 +41,9 @@ class WhoamiResponse(BaseModel):
     tier: StrictStr = Field(description="Resolved plan tier from the org's Stripe `credits_product_id` (V2 'Scale' buyers map to `enterprise`). The MCP reads this once per session to tier-filter its advertised tool list. Unknown / unmapped products fall through to `free` (the safe default).")
     appsumo_tier: Optional[StrictInt] = None
     features: List[Optional[StrictStr]] = Field(description="EFFECTIVE feature grants the gates actually enforce: base Stripe tier ∪ AppSumo carve-outs − AppSumo blocks (via `has_feature_effective`). Sourced from the same function the server-side gate uses so the advertised list and the gate can't drift. Sorted alphabetically for stable diffs.")
+    acting_staff_email: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "user_email", "user_id", "user_name", "organization_id", "organization_name", "auth_type", "scopes", "tier", "appsumo_tier", "features"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "user_email", "user_id", "user_name", "organization_id", "organization_name", "auth_type", "scopes", "tier", "appsumo_tier", "features", "acting_staff_email"]
 
     @field_validator('auth_type')
     def auth_type_validate_enum(cls, value):
@@ -154,6 +155,11 @@ class WhoamiResponse(BaseModel):
         if self.appsumo_tier is None and "appsumo_tier" in self.model_fields_set:
             _dict['appsumo_tier'] = None
 
+        # set to None if acting_staff_email (nullable) is None
+        # and model_fields_set contains the field
+        if self.acting_staff_email is None and "acting_staff_email" in self.model_fields_set:
+            _dict['acting_staff_email'] = None
+
         return _dict
 
     @classmethod
@@ -180,7 +186,8 @@ class WhoamiResponse(BaseModel):
             "scopes": obj.get("scopes"),
             "tier": obj.get("tier"),
             "appsumo_tier": obj.get("appsumo_tier"),
-            "features": obj.get("features")
+            "features": obj.get("features"),
+            "acting_staff_email": obj.get("acting_staff_email")
         })
         # store additional fields in additional_properties
         for _key in obj.keys():
