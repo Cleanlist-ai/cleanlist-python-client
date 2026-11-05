@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from uuid import UUID
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -34,7 +35,7 @@ class EnrichPersonRequest(BaseModel):
     last_name: Optional[StrictStr] = None
     company_name: Optional[StrictStr] = None
     domain: Optional[StrictStr] = None
-    person_id: Optional[StrictStr] = None
+    person_id: Optional[UUID] = None
     enrichment_type: Optional[StrictStr] = None
     include_phone: Optional[StrictBool] = Field(default=False, description="Legacy scope toggle, kept for back-compat. false → 'partial', true → 'phone_only'. Ignored when enrichment_type is set.")
     quote_id: Optional[StrictStr] = None
