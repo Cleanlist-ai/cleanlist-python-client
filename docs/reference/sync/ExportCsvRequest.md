@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **list_id** | **str** | ID of the Lead List to export. Must be a list your API key is authorized to read. | 
 **columns** | **List[str]** |  | [optional] 
 **include_smart_agents** | **bool** | Append the list&#39;s configured smart-agent result columns after the selected columns. Set false to export only the base columns. | [optional] [default to True]
+**job_id** | **str** |  | [optional] 
 
 ## Example
 

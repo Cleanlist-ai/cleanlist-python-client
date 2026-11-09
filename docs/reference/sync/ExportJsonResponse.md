@@ -12,8 +12,9 @@ Name | Type | Description | Notes
 **message** | **str** |  | [optional] 
 **list_id** | **str** | ID of the Lead List whose leads were returned. | 
 **leads** | **List[Optional[object]]** | Page of lead rows returned inline, each projected to the selected (or default) columns. At most &#x60;limit&#x60; rows are returned per call. | 
-**total** | **int** | Total number of leads in the list (across all pages). | 
+**total** | **int** | Total number of rows in the list (across all pages), import rows not yet enriched included. | 
 **cursor** | **str** |  | [optional] 
+**skipped** | **int** | Rows of this page&#39;s place in the ordering that left the list (deleted or moved) after the cursor&#39;s ordering was taken, so the page holds fewer rows than it covers. &#x60;total&#x60; minus the sum of &#x60;skipped&#x60; over every page is the number of rows returned. | [optional] [default to 0]
 
 ## Example
 

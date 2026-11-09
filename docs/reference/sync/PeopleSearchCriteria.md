@@ -33,7 +33,7 @@ Name | Type | Description | Notes
 **school_names** | **List[str]** | Institution names, matched exactly. | [optional] 
 **fields_of_study** | **List[str]** | Fields of study, matched exactly. | [optional] 
 **certification_keywords** | **List[str]** | Certification names, matched exactly. | [optional] 
-**company_name_filter** | **str** | One current employer name, ANDed. | [optional] [default to '']
+**company_name_filter** | **str** | One current employer name, or a website domain, as typed. With current_company_names, domains or LinkedIn URLs it is one more alternative (ORed); alone, a domain matches the employer&#39;s website exactly and a name matches by company_name_match_type. | [optional] [default to '']
 **company_name_match_type** | **str** | How employer NAMES match — governs both company_name_filter and current_company_names: contains (substring), exact, or similar. Domains and LinkedIn URLs are always exact. | [optional] [default to 'contains']
 **first_name** | **str** | First name, exact. | [optional] [default to '']
 **last_name** | **str** | Last name, exact. | [optional] [default to '']

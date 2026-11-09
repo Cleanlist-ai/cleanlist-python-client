@@ -243,8 +243,8 @@ Pipeline:
        redeem quote.
     5. Bulk-insert RawPeople into the list. UUIDs are stamped
        Python-side so we can hand them to the workflow.
-    6. If dispatching: kick off `start_bulk_enrichment` with the
-       parsed prospects + raw_person_ids. The workflow's per-Lead
+    6. If dispatching: write the imported rows as a list selection and
+       kick off `start_selection_enrichment` on it. The workflow's per-Lead
        `insert_lead_to_list` activity handles prospect_count
        updates per the existing pattern; import-only path bumps
        prospect_count here directly.
@@ -357,9 +357,9 @@ Delete a lead list
 
 Delete a list and its lead memberships. Leads survive.
 
-Hard delete via `delete_with_dependencies` (mirrors the portal):
-smart/action columns, CRM-contact links, per-user state, shares,
-raw-person stubs, and junction rows are removed; the Lead rows
+The list is gone at once and a background job deletes its rows (mirrors
+the portal): smart/action columns, CRM-contact links, per-user state,
+shares, raw-person stubs, and junction rows are removed; the Lead rows
 themselves are global entities and are NOT deleted — they stay
 findable via search_people and in any other list they belong to.
 
@@ -743,7 +743,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **list_leads_in_list**
-> LeadsPageResponse list_leads_in_list(list_id, limit=limit, cursor=cursor)
+> LeadsPageResponse list_leads_in_list(list_id, limit=limit, cursor=cursor, snapshot_id=snapshot_id, offset=offset)
 
 List leads in a list
 
@@ -753,7 +753,10 @@ Fields like `first_name`, `last_name`, `title`, `company` come from
 the joined Prospect + Company relations — the Lead row itself only
 carries enrichment results (email, phone, linkedin URL).
 
-Page forward with `limit` (1–500, default 100) and the opaque `cursor`.
+Page forward with `limit` (1–500, default 100) and the opaque `cursor`,
+or with the response's `snapshot_id` plus an `offset`. Either way the walk
+reads one frozen order, so rows added meanwhile cause no duplicates or
+skips; a snapshot that has expired answers 409 `snapshot_expired`.
 The response also carries a `task_id` cohort handle for the page so a
 follow-up `add_person_enrichments` can operate on these leads without
 re-passing lead_ids. Requires the `lists:read` scope.
@@ -793,10 +796,12 @@ with cleanlist_ai.ApiClient(configuration) as api_client:
     list_id = 'list_id_example' # str | 
     limit = 100 # int |  (optional) (default to 100)
     cursor = 'cursor_example' # str |  (optional)
+    snapshot_id = 'snapshot_id_example' # str |  (optional)
+    offset = 56 # int |  (optional)
 
     try:
         # List leads in a list
-        api_response = api_instance.list_leads_in_list(list_id, limit=limit, cursor=cursor)
+        api_response = api_instance.list_leads_in_list(list_id, limit=limit, cursor=cursor, snapshot_id=snapshot_id, offset=offset)
         print("The response of PublicLeadListsApi->list_leads_in_list:\n")
         pprint(api_response)
     except Exception as e:
@@ -813,6 +818,8 @@ Name | Type | Description  | Notes
  **list_id** | **str**|  | 
  **limit** | **int**|  | [optional] [default to 100]
  **cursor** | **str**|  | [optional] 
+ **snapshot_id** | **str**|  | [optional] 
+ **offset** | **int**|  | [optional] 
 
 ### Return type
 

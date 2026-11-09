@@ -391,7 +391,7 @@ Name | Type | Description  | Notes
 
 Search People
 
-Search people. FREE — credits are spent at enrichment / save time.
+Search people. Free unless the org has a per-row search price.
 
 Delegates to the internal staging handler so the 5-step filter
 pipeline (location component expansion → region contains expansion
