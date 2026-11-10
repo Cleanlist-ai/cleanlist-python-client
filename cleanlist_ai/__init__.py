@@ -220,3 +220,6 @@ from cleanlist_ai.models.workforce_rule import WorkforceRule as WorkforceRule
 # --- Cleanlist convenience facade (appended by scripts/generate.sh) ---
 from cleanlist_ai.client import Cleanlist as Cleanlist
 __all__.append("Cleanlist")
+from cleanlist_ai.retry import RateLimit as RateLimit, ResponseMeta as ResponseMeta, read_response_meta as read_response_meta
+from cleanlist_ai.webhooks import verify_webhook_signature as verify_webhook_signature
+__all__.extend(["RateLimit", "ResponseMeta", "read_response_meta", "verify_webhook_signature"])

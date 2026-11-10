@@ -16,10 +16,18 @@ You can always drop down to the generated API classes directly if you prefer
 """
 from __future__ import annotations
 
+import asyncio
 import os
 from typing import Optional
 
 from cleanlist_ai.aio.api_client import ApiClient
+from cleanlist_ai.retry import (
+    DEFAULT_MAX_ATTEMPTS,
+    ResponseMeta,
+    add_idempotency_key,
+    read_response_meta,
+    retry_delay,
+)
 from cleanlist_ai.aio.configuration import Configuration
 from cleanlist_ai.aio.api.public_enrichment_api import PublicEnrichmentApi
 from cleanlist_ai.aio.api.public_export_api import PublicExportApi
@@ -33,6 +41,38 @@ DEFAULT_HOST = "https://api.cleanlist.ai"
 
 #: Environment variable read when ``access_token`` is not passed explicitly.
 API_KEY_ENV_VAR = "CLEANLIST_API_KEY"
+
+
+class RetryingApiClient(ApiClient):
+    """``ApiClient`` that retries 429s and 5xx and keys writes for idempotency.
+
+    Each write gets one ``Idempotency-Key`` (a key passed in ``_headers`` wins),
+    reused on its retries so a retried write runs once. Waits honor
+    ``Retry-After``; a wait over a minute returns the response instead.
+    """
+
+    def __init__(self, configuration: Configuration, max_attempts: int = DEFAULT_MAX_ATTEMPTS) -> None:
+        super().__init__(configuration)
+        self.max_attempts = max(1, int(max_attempts))
+        #: Rate-limit, mode and replay headers of the most recent response.
+        self.last_response: Optional[ResponseMeta] = None
+
+    async def call_api(self, method, url, header_params=None, body=None, post_params=None, _request_timeout=None):
+        header_params = add_idempotency_key(method, header_params)
+        attempt = 1
+        while True:
+            response = await super().call_api(method, url, header_params, body, post_params, _request_timeout)
+            delay = retry_delay(response.status, response.getheader("Retry-After"), attempt, self.max_attempts)
+            if delay is None:
+                break
+            try:
+                response.response.release()
+            except Exception:  # noqa: BLE001 - nothing left to free
+                pass
+            await asyncio.sleep(delay)
+            attempt += 1
+        self.last_response = read_response_meta(response.status, response.getheaders())
+        return response
 
 
 class Cleanlist:
@@ -50,6 +90,11 @@ class Cleanlist:
         ``http://localhost:8000`` for local development.
     :param configuration: Supply a fully-built :class:`Configuration` for
         advanced needs; ``access_token`` / ``host`` are applied on top of it.
+    :param max_attempts: Tries per request, the first included (default 3).
+        429s and 5xx are retried with backoff, honoring ``Retry-After``; writes
+        carry an ``Idempotency-Key`` that stays the same across retries. Pass
+        ``_headers={"Idempotency-Key": "..."}`` on a call to set your own.
+        ``1`` turns retries off.
 
     Resource groups mirror the synchronous client: :attr:`workspace`,
     :attr:`lead_lists`, :attr:`people_finder`, :attr:`enrichment`,
@@ -62,6 +107,7 @@ class Cleanlist:
         *,
         host: str = DEFAULT_HOST,
         configuration: Optional[Configuration] = None,
+        max_attempts: int = DEFAULT_MAX_ATTEMPTS,
     ) -> None:
         access_token = access_token or os.getenv(API_KEY_ENV_VAR)
         if not access_token:
@@ -78,7 +124,8 @@ class Cleanlist:
                 configuration.host = host
 
         self.configuration = configuration
-        self.api_client = ApiClient(configuration)
+        self.api_client = RetryingApiClient(configuration, max_attempts)
+        self._key_mode = "test" if access_token.startswith("clapi_test_") else "live"
 
         self.workspace = PublicWorkspaceApi(self.api_client)
         self.lead_lists = PublicLeadListsApi(self.api_client)
@@ -86,6 +133,17 @@ class Cleanlist:
         self.enrichment = PublicEnrichmentApi(self.api_client)
         self.smart_agents = PublicSmartAgentsApi(self.api_client)
         self.export = PublicExportApi(self.api_client)
+
+    @property
+    def last_response(self) -> Optional[ResponseMeta]:
+        """Rate-limit, mode and replay headers of the most recent response."""
+        return self.api_client.last_response
+
+    @property
+    def mode(self) -> str:
+        """``"test"`` when the server says so (``Cleanlist-Mode: test``), else what the key prefix implies."""
+        last = self.api_client.last_response
+        return (last.mode if last is not None else None) or self._key_mode
 
     async def close(self) -> None:
         """Close the underlying aiohttp client session."""

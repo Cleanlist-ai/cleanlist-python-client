@@ -63,6 +63,8 @@ rm -rf "$ROOT/cleanlist_ai/test" "$ROOT/cleanlist_ai/aio/test"
 echo "==> Applying hand-authored overlay (Cleanlist convenience facade)"
 cp "$ROOT/overlay/sync/client.py" "$ROOT/cleanlist_ai/client.py"
 cp "$ROOT/overlay/async/client.py" "$ROOT/cleanlist_ai/aio/client.py"
+cp "$ROOT/overlay/sync/retry.py" "$ROOT/cleanlist_ai/retry.py"
+cp "$ROOT/overlay/sync/webhooks.py" "$ROOT/cleanlist_ai/webhooks.py"
 # Export the facade from each package's __init__ so `from cleanlist_ai import
 # Cleanlist` (and the .aio variant) works. Idempotent: __init__ is regenerated
 # fresh each run, so this appends exactly once.
@@ -75,6 +77,11 @@ for init in "cleanlist_ai/__init__.py" "cleanlist_ai/aio/__init__.py"; do
     echo "__all__.append(\"Cleanlist\")"
   } >> "$ROOT/$init"
 done
+{
+  echo "from cleanlist_ai.retry import RateLimit as RateLimit, ResponseMeta as ResponseMeta, read_response_meta as read_response_meta"
+  echo "from cleanlist_ai.webhooks import verify_webhook_signature as verify_webhook_signature"
+  echo "__all__.extend([\"RateLimit\", \"ResponseMeta\", \"read_response_meta\", \"verify_webhook_signature\"])"
+} >> "$ROOT/cleanlist_ai/__init__.py"
 
 echo "==> Done. Packages:"
 echo "    cleanlist_ai       (sync)"

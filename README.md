@@ -41,6 +41,8 @@ with Cleanlist(access_token="clapi_live_...") as cl:
   - [Smart Agents](#smart-agents-clsmart_agents)
   - [Export](#export-clexport)
 - [Examples](#examples)
+- [Retries, idempotency and rate limits](#retries-idempotency-and-rate-limits)
+- [Verifying webhooks](#verifying-webhooks)
 - [Error handling](#error-handling)
 - [Pagination](#pagination)
 - [Using the generated API classes directly](#using-the-generated-api-classes-directly)
@@ -149,6 +151,7 @@ asyncio.run(main())
 | `access_token`  | `$CLEANLIST_API_KEY`       | Your API key. Sent as `Authorization: Bearer …`.                       |
 | `host`          | `https://api.cleanlist.ai` | API base URL. Use `http://localhost:8000` for local dev.               |
 | `configuration` | `None`                     | A pre-built `Configuration` for advanced needs (proxy, retries, etc.). |
+| `max_attempts`  | `3`                        | Tries per request, the first included. `1` turns retries off.          |
 
 For finer control, build a `Configuration` yourself:
 
@@ -417,6 +420,38 @@ Runnable scripts live in [`examples/`](examples/) (setup notes in
 | [`07_async_quickstart.py`](examples/07_async_quickstart.py) | The async client (`cleanlist_ai.aio`) end to end. | Free |
 | [`08_error_handling.py`](examples/08_error_handling.py) | Catching typed API exceptions. | Free |
 | [`09_find_people.py`](examples/09_find_people.py) | People Finder: filter values, compile preview, search + next page. | Free |
+
+## Retries, idempotency and rate limits
+
+A 429 or 5xx is retried with backoff, honoring `Retry-After` (a wait over a minute is
+returned to you instead). Every POST, PUT, PATCH and DELETE carries an `Idempotency-Key`
+that stays the same across its retries, so a retried write runs once. To set your own:
+
+```python
+cl.lead_lists.create_list(CreateListRequest(name="Q3"), _headers={"Idempotency-Key": "order-1234"})
+```
+
+After any call, `cl.last_response` has the rate-limit headers and the mode:
+
+```python
+cl.last_response.rate_limit           # RateLimit(limit, remaining, reset); reset is unix seconds
+cl.last_response.idempotent_replayed  # True when the server replayed a stored response
+cl.mode                               # "test" for a clapi_test_ key's sandbox workspace, else "live"
+```
+
+`read_response_meta(err.status, err.headers)` reads the same values off an `ApiException`.
+
+## Verifying webhooks
+
+```python
+from cleanlist_ai import verify_webhook_signature
+
+# raw_body: the request body bytes exactly as received, not re-serialized JSON.
+if not verify_webhook_signature(raw_body, request.headers.get("Cleanlist-Signature"), secret):
+    return Response(status=400)
+```
+
+Signatures older than 5 minutes are refused (`tolerance_seconds=` changes that).
 
 ## Error handling
 
