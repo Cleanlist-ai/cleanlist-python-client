@@ -33,10 +33,11 @@ class ExportJsonResponse(BaseModel):
     message: Optional[StrictStr] = None
     list_id: StrictStr = Field(description="ID of the Lead List whose leads were returned.")
     leads: List[Optional[Dict[str, Any]]] = Field(description="Page of lead rows returned inline, each projected to the selected (or default) columns. At most `limit` rows are returned per call.")
-    total: StrictInt = Field(description="Total number of leads in the list (across all pages).")
+    total: StrictInt = Field(description="Total number of rows in the list (across all pages), import rows not yet enriched included.")
     cursor: Optional[StrictStr] = None
+    skipped: Optional[StrictInt] = Field(default=0, description="Rows of this page's place in the ordering that left the list (deleted or moved) after the cursor's ordering was taken, so the page holds fewer rows than it covers. `total` minus the sum of `skipped` over every page is the number of rows returned.")
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "list_id", "leads", "total", "cursor"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "list_id", "leads", "total", "cursor", "skipped"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -134,7 +135,8 @@ class ExportJsonResponse(BaseModel):
             "list_id": obj.get("list_id"),
             "leads": obj.get("leads"),
             "total": obj.get("total"),
-            "cursor": obj.get("cursor")
+            "cursor": obj.get("cursor"),
+            "skipped": obj.get("skipped") if obj.get("skipped") is not None else 0
         })
         # store additional fields in additional_properties
         for _key in obj.keys():

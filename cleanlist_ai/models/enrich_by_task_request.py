@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from typing import Optional, Set
@@ -32,7 +32,18 @@ class EnrichByTaskRequest(BaseModel):
     entity_ids: Optional[List[StrictStr]] = None
     lead_list_id: Optional[StrictStr] = None
     quote_id: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["task_id", "data_points", "entity_ids", "lead_list_id", "quote_id"]
+    phone_waterfall: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["task_id", "data_points", "entity_ids", "lead_list_id", "quote_id", "phone_waterfall"]
+
+    @field_validator('phone_waterfall')
+    def phone_waterfall_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['standard', 'gb']):
+            raise ValueError("must be one of enum values ('standard', 'gb')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -88,6 +99,11 @@ class EnrichByTaskRequest(BaseModel):
         if self.quote_id is None and "quote_id" in self.model_fields_set:
             _dict['quote_id'] = None
 
+        # set to None if phone_waterfall (nullable) is None
+        # and model_fields_set contains the field
+        if self.phone_waterfall is None and "phone_waterfall" in self.model_fields_set:
+            _dict['phone_waterfall'] = None
+
         return _dict
 
     @classmethod
@@ -104,7 +120,8 @@ class EnrichByTaskRequest(BaseModel):
             "data_points": obj.get("data_points"),
             "entity_ids": obj.get("entity_ids"),
             "lead_list_id": obj.get("lead_list_id"),
-            "quote_id": obj.get("quote_id")
+            "quote_id": obj.get("quote_id"),
+            "phone_waterfall": obj.get("phone_waterfall")
         })
         return _obj
 

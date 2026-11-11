@@ -60,7 +60,7 @@ class PublicExportApi:
     ) -> ExportCsvResponse:
         """Export a list to CSV (signed URL)
 
-        Export a Lead List to CSV and return a time-limited signed download URL.  Streams the list's leads through a temporary spooled file, uploads the result to blob storage, and responds with a SAS-signed `download_url` that expires 24 hours after generation (see `expires_at`). Pass `columns` to control which fields — and their order — are written, or omit it to use the default column set; set `include_smart_agents=false` to skip any configured smart-agent result columns. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
+        Export a Lead List to CSV and return a time-limited signed download URL.  Starts an export job over every row of the list (import rows not yet enriched come first) and waits up to 20 seconds for it. When the file is ready the response carries a SAS-signed `download_url` that expires 24 hours after generation (see `expires_at`). A bigger list answers HTTP 202 with `status: running` and a `job_id`: call again with that `job_id` to get the link. Pass `columns` to control which fields, and their order, are written, or omit it to use the default column set; set `include_smart_agents=false` to skip any configured smart-agent result columns. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
 
         :param export_csv_request: (required)
         :type export_csv_request: ExportCsvRequest
@@ -136,7 +136,7 @@ class PublicExportApi:
     ) -> ApiResponse[ExportCsvResponse]:
         """Export a list to CSV (signed URL)
 
-        Export a Lead List to CSV and return a time-limited signed download URL.  Streams the list's leads through a temporary spooled file, uploads the result to blob storage, and responds with a SAS-signed `download_url` that expires 24 hours after generation (see `expires_at`). Pass `columns` to control which fields — and their order — are written, or omit it to use the default column set; set `include_smart_agents=false` to skip any configured smart-agent result columns. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
+        Export a Lead List to CSV and return a time-limited signed download URL.  Starts an export job over every row of the list (import rows not yet enriched come first) and waits up to 20 seconds for it. When the file is ready the response carries a SAS-signed `download_url` that expires 24 hours after generation (see `expires_at`). A bigger list answers HTTP 202 with `status: running` and a `job_id`: call again with that `job_id` to get the link. Pass `columns` to control which fields, and their order, are written, or omit it to use the default column set; set `include_smart_agents=false` to skip any configured smart-agent result columns. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
 
         :param export_csv_request: (required)
         :type export_csv_request: ExportCsvRequest
@@ -212,7 +212,7 @@ class PublicExportApi:
     ) -> RESTResponseType:
         """Export a list to CSV (signed URL)
 
-        Export a Lead List to CSV and return a time-limited signed download URL.  Streams the list's leads through a temporary spooled file, uploads the result to blob storage, and responds with a SAS-signed `download_url` that expires 24 hours after generation (see `expires_at`). Pass `columns` to control which fields — and their order — are written, or omit it to use the default column set; set `include_smart_agents=false` to skip any configured smart-agent result columns. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
+        Export a Lead List to CSV and return a time-limited signed download URL.  Starts an export job over every row of the list (import rows not yet enriched come first) and waits up to 20 seconds for it. When the file is ready the response carries a SAS-signed `download_url` that expires 24 hours after generation (see `expires_at`). A bigger list answers HTTP 202 with `status: running` and a `job_id`: call again with that `job_id` to get the link. Pass `columns` to control which fields, and their order, are written, or omit it to use the default column set; set `include_smart_agents=false` to skip any configured smart-agent result columns. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
 
         :param export_csv_request: (required)
         :type export_csv_request: ExportCsvRequest
@@ -347,7 +347,7 @@ class PublicExportApi:
         self,
         list_id: StrictStr,
         limit: Optional[Annotated[int, Field(le=500, strict=True, ge=1)]] = None,
-        cursor: Optional[StrictStr] = None,
+        cursor: Optional[Annotated[str, Field(strict=True, max_length=1024)]] = None,
         columns: Optional[List[StrictStr]] = None,
         _request_timeout: Union[
             None,
@@ -364,7 +364,7 @@ class PublicExportApi:
     ) -> ExportJsonResponse:
         """Export a list as JSON
 
-        Export a Lead List as JSON rows returned inline in the response.  Returns a page of leads (default 100, max 500 per call) projected to the same columns as the CSV export and wrapped in the standard response envelope. Use the opaque `cursor` from each response to fetch the next page; a malformed cursor returns 400 rather than silently rewinding to page 0. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
+        Export a Lead List as JSON rows returned inline in the response.  Returns a page of rows (default 100, max 500 per call) projected to the same columns as the CSV export, in the same order (import rows not yet enriched first, then leads), wrapped in the standard response envelope. Use the opaque `cursor` from each response to fetch the next page; a malformed cursor returns 400 rather than silently rewinding to page 0, and a cursor whose ordering expired (15 minutes unused) returns 409. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
 
         :param list_id: (required)
         :type list_id: str
@@ -435,7 +435,7 @@ class PublicExportApi:
         self,
         list_id: StrictStr,
         limit: Optional[Annotated[int, Field(le=500, strict=True, ge=1)]] = None,
-        cursor: Optional[StrictStr] = None,
+        cursor: Optional[Annotated[str, Field(strict=True, max_length=1024)]] = None,
         columns: Optional[List[StrictStr]] = None,
         _request_timeout: Union[
             None,
@@ -452,7 +452,7 @@ class PublicExportApi:
     ) -> ApiResponse[ExportJsonResponse]:
         """Export a list as JSON
 
-        Export a Lead List as JSON rows returned inline in the response.  Returns a page of leads (default 100, max 500 per call) projected to the same columns as the CSV export and wrapped in the standard response envelope. Use the opaque `cursor` from each response to fetch the next page; a malformed cursor returns 400 rather than silently rewinding to page 0. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
+        Export a Lead List as JSON rows returned inline in the response.  Returns a page of rows (default 100, max 500 per call) projected to the same columns as the CSV export, in the same order (import rows not yet enriched first, then leads), wrapped in the standard response envelope. Use the opaque `cursor` from each response to fetch the next page; a malformed cursor returns 400 rather than silently rewinding to page 0, and a cursor whose ordering expired (15 minutes unused) returns 409. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
 
         :param list_id: (required)
         :type list_id: str
@@ -523,7 +523,7 @@ class PublicExportApi:
         self,
         list_id: StrictStr,
         limit: Optional[Annotated[int, Field(le=500, strict=True, ge=1)]] = None,
-        cursor: Optional[StrictStr] = None,
+        cursor: Optional[Annotated[str, Field(strict=True, max_length=1024)]] = None,
         columns: Optional[List[StrictStr]] = None,
         _request_timeout: Union[
             None,
@@ -540,7 +540,7 @@ class PublicExportApi:
     ) -> RESTResponseType:
         """Export a list as JSON
 
-        Export a Lead List as JSON rows returned inline in the response.  Returns a page of leads (default 100, max 500 per call) projected to the same columns as the CSV export and wrapped in the standard response envelope. Use the opaque `cursor` from each response to fetch the next page; a malformed cursor returns 400 rather than silently rewinding to page 0. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
+        Export a Lead List as JSON rows returned inline in the response.  Returns a page of rows (default 100, max 500 per call) projected to the same columns as the CSV export, in the same order (import rows not yet enriched first, then leads), wrapped in the standard response envelope. Use the opaque `cursor` from each response to fetch the next page; a malformed cursor returns 400 rather than silently rewinding to page 0, and a cursor whose ordering expired (15 minutes unused) returns 409. This export is free and does not consume credits.  **📖 Docs:** https://docs.cleanlist.ai/guides/exporting-data
 
         :param list_id: (required)
         :type list_id: str

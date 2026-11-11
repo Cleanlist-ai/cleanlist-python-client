@@ -34,6 +34,7 @@ class LeadsPageResponse(BaseModel):
     agent_instructions: Optional[StrictStr] = None
     usage: Optional[StrictStr] = None
     message: Optional[StrictStr] = None
+    snapshot_id: Optional[StrictStr] = None
     presentation: Optional[SearchPresentation] = None
     pending_imports: Optional[List[PendingImportRow]] = None
     pending_import_total: Optional[StrictInt] = None
@@ -42,7 +43,7 @@ class LeadsPageResponse(BaseModel):
     leads: List[LeadRow] = Field(description="The page of leads in the list.")
     total: StrictInt = Field(description="Total number of leads in the list across all pages.")
     cursor: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "presentation", "pending_imports", "pending_import_total", "pending_import_cursor", "list_id", "leads", "total", "cursor"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "snapshot_id", "presentation", "pending_imports", "pending_import_total", "pending_import_cursor", "list_id", "leads", "total", "cursor"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -125,6 +126,11 @@ class LeadsPageResponse(BaseModel):
         if self.message is None and "message" in self.model_fields_set:
             _dict['message'] = None
 
+        # set to None if snapshot_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.snapshot_id is None and "snapshot_id" in self.model_fields_set:
+            _dict['snapshot_id'] = None
+
         # set to None if presentation (nullable) is None
         # and model_fields_set contains the field
         if self.presentation is None and "presentation" in self.model_fields_set:
@@ -167,6 +173,7 @@ class LeadsPageResponse(BaseModel):
             "agent_instructions": obj.get("agent_instructions"),
             "usage": obj.get("usage"),
             "message": obj.get("message"),
+            "snapshot_id": obj.get("snapshot_id"),
             "presentation": SearchPresentation.from_dict(obj["presentation"]) if obj.get("presentation") is not None else None,
             "pending_imports": [PendingImportRow.from_dict(_item) for _item in obj["pending_imports"]] if obj.get("pending_imports") is not None else None,
             "pending_import_total": obj.get("pending_import_total"),

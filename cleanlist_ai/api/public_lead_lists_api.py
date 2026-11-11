@@ -693,7 +693,7 @@ class PublicLeadListsApi:
     ) -> CsvImportResponse:
         """Import leads from CSV
 
-        Import a CSV into a lead list and optionally dispatch bulk enrichment.  Pipeline:     1. Authz: `lists:write` always; `enrich:write` additionally when        `dispatch_enrichment=True` (the workflow spends credits).     2. Idempotency cache lookup (org-wide, 24h TTL).     3. Base64 decode + parse via `parse_csv_to_rawpeople`.     4. If dispatching: verify quote (if provided), open reservation,        redeem quote.     5. Bulk-insert RawPeople into the list. UUIDs are stamped        Python-side so we can hand them to the workflow.     6. If dispatching: kick off `start_bulk_enrichment` with the        parsed prospects + raw_person_ids. The workflow's per-Lead        `insert_lead_to_list` activity handles prospect_count        updates per the existing pattern; import-only path bumps        prospect_count here directly.     7. Cache the response under `idempotency_key` (if provided).  Cross-list dedup: this endpoint dedupes ONLY within the upload. A row whose identity already exists as a Lead elsewhere in the workspace still imports as a RawPerson here; the workflow's `persist_enrichment_result` then deduplicates against existing Leads by public_identifier / prospect_id (existing behavior). Net effect: no duplicate Lead, but the RawPerson stub persists until the workflow processes it.  Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows) with a `column_mapping` from canonical field to CSV header. Requires the `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true` (the enrichment spend). Importing rows is free; when dispatching, enrichment is billed on top (partial 1cr, phone_only 10cr, full 11cr per lead). Pass an `idempotency_key` to make retries safe.  **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
+        Import a CSV into a lead list and optionally dispatch bulk enrichment.  Pipeline:     1. Authz: `lists:write` always; `enrich:write` additionally when        `dispatch_enrichment=True` (the workflow spends credits).     2. Idempotency cache lookup (org-wide, 24h TTL).     3. Base64 decode + parse via `parse_csv_to_rawpeople`.     4. If dispatching: verify quote (if provided), open reservation,        redeem quote.     5. Bulk-insert RawPeople into the list. UUIDs are stamped        Python-side so we can hand them to the workflow.     6. If dispatching: write the imported rows as a list selection and        kick off `start_selection_enrichment` on it. The workflow's per-Lead        `insert_lead_to_list` activity handles prospect_count        updates per the existing pattern; import-only path bumps        prospect_count here directly.     7. Cache the response under `idempotency_key` (if provided).  Cross-list dedup: this endpoint dedupes ONLY within the upload. A row whose identity already exists as a Lead elsewhere in the workspace still imports as a RawPerson here; the workflow's `persist_enrichment_result` then deduplicates against existing Leads by public_identifier / prospect_id (existing behavior). Net effect: no duplicate Lead, but the RawPerson stub persists until the workflow processes it.  Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows) with a `column_mapping` from canonical field to CSV header. Requires the `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true` (the enrichment spend). Importing rows is free; when dispatching, enrichment is billed on top (partial 1cr, phone_only 10cr, full 11cr per lead). Pass an `idempotency_key` to make retries safe.  **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
 
         :param list_id: (required)
         :type list_id: str
@@ -773,7 +773,7 @@ class PublicLeadListsApi:
     ) -> ApiResponse[CsvImportResponse]:
         """Import leads from CSV
 
-        Import a CSV into a lead list and optionally dispatch bulk enrichment.  Pipeline:     1. Authz: `lists:write` always; `enrich:write` additionally when        `dispatch_enrichment=True` (the workflow spends credits).     2. Idempotency cache lookup (org-wide, 24h TTL).     3. Base64 decode + parse via `parse_csv_to_rawpeople`.     4. If dispatching: verify quote (if provided), open reservation,        redeem quote.     5. Bulk-insert RawPeople into the list. UUIDs are stamped        Python-side so we can hand them to the workflow.     6. If dispatching: kick off `start_bulk_enrichment` with the        parsed prospects + raw_person_ids. The workflow's per-Lead        `insert_lead_to_list` activity handles prospect_count        updates per the existing pattern; import-only path bumps        prospect_count here directly.     7. Cache the response under `idempotency_key` (if provided).  Cross-list dedup: this endpoint dedupes ONLY within the upload. A row whose identity already exists as a Lead elsewhere in the workspace still imports as a RawPerson here; the workflow's `persist_enrichment_result` then deduplicates against existing Leads by public_identifier / prospect_id (existing behavior). Net effect: no duplicate Lead, but the RawPerson stub persists until the workflow processes it.  Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows) with a `column_mapping` from canonical field to CSV header. Requires the `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true` (the enrichment spend). Importing rows is free; when dispatching, enrichment is billed on top (partial 1cr, phone_only 10cr, full 11cr per lead). Pass an `idempotency_key` to make retries safe.  **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
+        Import a CSV into a lead list and optionally dispatch bulk enrichment.  Pipeline:     1. Authz: `lists:write` always; `enrich:write` additionally when        `dispatch_enrichment=True` (the workflow spends credits).     2. Idempotency cache lookup (org-wide, 24h TTL).     3. Base64 decode + parse via `parse_csv_to_rawpeople`.     4. If dispatching: verify quote (if provided), open reservation,        redeem quote.     5. Bulk-insert RawPeople into the list. UUIDs are stamped        Python-side so we can hand them to the workflow.     6. If dispatching: write the imported rows as a list selection and        kick off `start_selection_enrichment` on it. The workflow's per-Lead        `insert_lead_to_list` activity handles prospect_count        updates per the existing pattern; import-only path bumps        prospect_count here directly.     7. Cache the response under `idempotency_key` (if provided).  Cross-list dedup: this endpoint dedupes ONLY within the upload. A row whose identity already exists as a Lead elsewhere in the workspace still imports as a RawPerson here; the workflow's `persist_enrichment_result` then deduplicates against existing Leads by public_identifier / prospect_id (existing behavior). Net effect: no duplicate Lead, but the RawPerson stub persists until the workflow processes it.  Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows) with a `column_mapping` from canonical field to CSV header. Requires the `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true` (the enrichment spend). Importing rows is free; when dispatching, enrichment is billed on top (partial 1cr, phone_only 10cr, full 11cr per lead). Pass an `idempotency_key` to make retries safe.  **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
 
         :param list_id: (required)
         :type list_id: str
@@ -853,7 +853,7 @@ class PublicLeadListsApi:
     ) -> RESTResponseType:
         """Import leads from CSV
 
-        Import a CSV into a lead list and optionally dispatch bulk enrichment.  Pipeline:     1. Authz: `lists:write` always; `enrich:write` additionally when        `dispatch_enrichment=True` (the workflow spends credits).     2. Idempotency cache lookup (org-wide, 24h TTL).     3. Base64 decode + parse via `parse_csv_to_rawpeople`.     4. If dispatching: verify quote (if provided), open reservation,        redeem quote.     5. Bulk-insert RawPeople into the list. UUIDs are stamped        Python-side so we can hand them to the workflow.     6. If dispatching: kick off `start_bulk_enrichment` with the        parsed prospects + raw_person_ids. The workflow's per-Lead        `insert_lead_to_list` activity handles prospect_count        updates per the existing pattern; import-only path bumps        prospect_count here directly.     7. Cache the response under `idempotency_key` (if provided).  Cross-list dedup: this endpoint dedupes ONLY within the upload. A row whose identity already exists as a Lead elsewhere in the workspace still imports as a RawPerson here; the workflow's `persist_enrichment_result` then deduplicates against existing Leads by public_identifier / prospect_id (existing behavior). Net effect: no duplicate Lead, but the RawPerson stub persists until the workflow processes it.  Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows) with a `column_mapping` from canonical field to CSV header. Requires the `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true` (the enrichment spend). Importing rows is free; when dispatching, enrichment is billed on top (partial 1cr, phone_only 10cr, full 11cr per lead). Pass an `idempotency_key` to make retries safe.  **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
+        Import a CSV into a lead list and optionally dispatch bulk enrichment.  Pipeline:     1. Authz: `lists:write` always; `enrich:write` additionally when        `dispatch_enrichment=True` (the workflow spends credits).     2. Idempotency cache lookup (org-wide, 24h TTL).     3. Base64 decode + parse via `parse_csv_to_rawpeople`.     4. If dispatching: verify quote (if provided), open reservation,        redeem quote.     5. Bulk-insert RawPeople into the list. UUIDs are stamped        Python-side so we can hand them to the workflow.     6. If dispatching: write the imported rows as a list selection and        kick off `start_selection_enrichment` on it. The workflow's per-Lead        `insert_lead_to_list` activity handles prospect_count        updates per the existing pattern; import-only path bumps        prospect_count here directly.     7. Cache the response under `idempotency_key` (if provided).  Cross-list dedup: this endpoint dedupes ONLY within the upload. A row whose identity already exists as a Lead elsewhere in the workspace still imports as a RawPerson here; the workflow's `persist_enrichment_result` then deduplicates against existing Leads by public_identifier / prospect_id (existing behavior). Net effect: no duplicate Lead, but the RawPerson stub persists until the workflow processes it.  Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows) with a `column_mapping` from canonical field to CSV header. Requires the `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true` (the enrichment spend). Importing rows is free; when dispatching, enrichment is billed on top (partial 1cr, phone_only 10cr, full 11cr per lead). Pass an `idempotency_key` to make retries safe.  **📖 Docs:** https://docs.cleanlist.ai/guides/bulk-enrichment
 
         :param list_id: (required)
         :type list_id: str
@@ -1008,7 +1008,7 @@ class PublicLeadListsApi:
     ) -> DeleteListResponse:
         """Delete a lead list
 
-        Delete a list and its lead memberships. Leads survive.  Hard delete via `delete_with_dependencies` (mirrors the portal): smart/action columns, CRM-contact links, per-user state, shares, raw-person stubs, and junction rows are removed; the Lead rows themselves are global entities and are NOT deleted — they stay findable via search_people and in any other list they belong to.  Owner-only + is_protected guards mirror the portal. There is no in-flight-workflow guard (the portal has none either; the MCP confirm-gate already prevents accidental deletes off a fuzzy name match). Re-deleting an unknown/already-deleted list returns 404.  Owner-only: a non-owner gets 404 (indistinguishable from missing) and a protected list gets 403 `list_protected`. Requires the `lists:write` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
+        Delete a list and its lead memberships. Leads survive.  The list is gone at once and a background job deletes its rows (mirrors the portal): smart/action columns, CRM-contact links, per-user state, shares, raw-person stubs, and junction rows are removed; the Lead rows themselves are global entities and are NOT deleted — they stay findable via search_people and in any other list they belong to.  Owner-only + is_protected guards mirror the portal. There is no in-flight-workflow guard (the portal has none either; the MCP confirm-gate already prevents accidental deletes off a fuzzy name match). Re-deleting an unknown/already-deleted list returns 404.  Owner-only: a non-owner gets 404 (indistinguishable from missing) and a protected list gets 403 `list_protected`. Requires the `lists:write` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
 
         :param list_id: (required)
         :type list_id: str
@@ -1084,7 +1084,7 @@ class PublicLeadListsApi:
     ) -> ApiResponse[DeleteListResponse]:
         """Delete a lead list
 
-        Delete a list and its lead memberships. Leads survive.  Hard delete via `delete_with_dependencies` (mirrors the portal): smart/action columns, CRM-contact links, per-user state, shares, raw-person stubs, and junction rows are removed; the Lead rows themselves are global entities and are NOT deleted — they stay findable via search_people and in any other list they belong to.  Owner-only + is_protected guards mirror the portal. There is no in-flight-workflow guard (the portal has none either; the MCP confirm-gate already prevents accidental deletes off a fuzzy name match). Re-deleting an unknown/already-deleted list returns 404.  Owner-only: a non-owner gets 404 (indistinguishable from missing) and a protected list gets 403 `list_protected`. Requires the `lists:write` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
+        Delete a list and its lead memberships. Leads survive.  The list is gone at once and a background job deletes its rows (mirrors the portal): smart/action columns, CRM-contact links, per-user state, shares, raw-person stubs, and junction rows are removed; the Lead rows themselves are global entities and are NOT deleted — they stay findable via search_people and in any other list they belong to.  Owner-only + is_protected guards mirror the portal. There is no in-flight-workflow guard (the portal has none either; the MCP confirm-gate already prevents accidental deletes off a fuzzy name match). Re-deleting an unknown/already-deleted list returns 404.  Owner-only: a non-owner gets 404 (indistinguishable from missing) and a protected list gets 403 `list_protected`. Requires the `lists:write` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
 
         :param list_id: (required)
         :type list_id: str
@@ -1160,7 +1160,7 @@ class PublicLeadListsApi:
     ) -> RESTResponseType:
         """Delete a lead list
 
-        Delete a list and its lead memberships. Leads survive.  Hard delete via `delete_with_dependencies` (mirrors the portal): smart/action columns, CRM-contact links, per-user state, shares, raw-person stubs, and junction rows are removed; the Lead rows themselves are global entities and are NOT deleted — they stay findable via search_people and in any other list they belong to.  Owner-only + is_protected guards mirror the portal. There is no in-flight-workflow guard (the portal has none either; the MCP confirm-gate already prevents accidental deletes off a fuzzy name match). Re-deleting an unknown/already-deleted list returns 404.  Owner-only: a non-owner gets 404 (indistinguishable from missing) and a protected list gets 403 `list_protected`. Requires the `lists:write` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
+        Delete a list and its lead memberships. Leads survive.  The list is gone at once and a background job deletes its rows (mirrors the portal): smart/action columns, CRM-contact links, per-user state, shares, raw-person stubs, and junction rows are removed; the Lead rows themselves are global entities and are NOT deleted — they stay findable via search_people and in any other list they belong to.  Owner-only + is_protected guards mirror the portal. There is no in-flight-workflow guard (the portal has none either; the MCP confirm-gate already prevents accidental deletes off a fuzzy name match). Re-deleting an unknown/already-deleted list returns 404.  Owner-only: a non-owner gets 404 (indistinguishable from missing) and a protected list gets 403 `list_protected`. Requires the `lists:write` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
 
         :param list_id: (required)
         :type list_id: str
@@ -2190,6 +2190,8 @@ class PublicLeadListsApi:
         list_id: StrictStr,
         limit: Optional[Annotated[int, Field(le=500, strict=True, ge=1)]] = None,
         cursor: Optional[StrictStr] = None,
+        snapshot_id: Optional[Annotated[str, Field(strict=True, max_length=512)]] = None,
+        offset: Optional[Annotated[int, Field(strict=True, ge=0)]] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2205,7 +2207,7 @@ class PublicLeadListsApi:
     ) -> LeadsPageResponse:
         """List leads in a list
 
-        Paginate leads in a list.  Fields like `first_name`, `last_name`, `title`, `company` come from the joined Prospect + Company relations — the Lead row itself only carries enrichment results (email, phone, linkedin URL).  Page forward with `limit` (1–500, default 100) and the opaque `cursor`. The response also carries a `task_id` cohort handle for the page so a follow-up `add_person_enrichments` can operate on these leads without re-passing lead_ids. Requires the `lists:read` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
+        Paginate leads in a list.  Fields like `first_name`, `last_name`, `title`, `company` come from the joined Prospect + Company relations — the Lead row itself only carries enrichment results (email, phone, linkedin URL).  Page forward with `limit` (1–500, default 100) and the opaque `cursor`, or with the response's `snapshot_id` plus an `offset`. Either way the walk reads one frozen order, so rows added meanwhile cause no duplicates or skips; a snapshot that has expired answers 409 `snapshot_expired`. The response also carries a `task_id` cohort handle for the page so a follow-up `add_person_enrichments` can operate on these leads without re-passing lead_ids. Requires the `lists:read` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
 
         :param list_id: (required)
         :type list_id: str
@@ -2213,6 +2215,10 @@ class PublicLeadListsApi:
         :type limit: int
         :param cursor:
         :type cursor: str
+        :param snapshot_id:
+        :type snapshot_id: str
+        :param offset:
+        :type offset: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2239,6 +2245,8 @@ class PublicLeadListsApi:
             list_id=list_id,
             limit=limit,
             cursor=cursor,
+            snapshot_id=snapshot_id,
+            offset=offset,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2274,6 +2282,8 @@ class PublicLeadListsApi:
         list_id: StrictStr,
         limit: Optional[Annotated[int, Field(le=500, strict=True, ge=1)]] = None,
         cursor: Optional[StrictStr] = None,
+        snapshot_id: Optional[Annotated[str, Field(strict=True, max_length=512)]] = None,
+        offset: Optional[Annotated[int, Field(strict=True, ge=0)]] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2289,7 +2299,7 @@ class PublicLeadListsApi:
     ) -> ApiResponse[LeadsPageResponse]:
         """List leads in a list
 
-        Paginate leads in a list.  Fields like `first_name`, `last_name`, `title`, `company` come from the joined Prospect + Company relations — the Lead row itself only carries enrichment results (email, phone, linkedin URL).  Page forward with `limit` (1–500, default 100) and the opaque `cursor`. The response also carries a `task_id` cohort handle for the page so a follow-up `add_person_enrichments` can operate on these leads without re-passing lead_ids. Requires the `lists:read` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
+        Paginate leads in a list.  Fields like `first_name`, `last_name`, `title`, `company` come from the joined Prospect + Company relations — the Lead row itself only carries enrichment results (email, phone, linkedin URL).  Page forward with `limit` (1–500, default 100) and the opaque `cursor`, or with the response's `snapshot_id` plus an `offset`. Either way the walk reads one frozen order, so rows added meanwhile cause no duplicates or skips; a snapshot that has expired answers 409 `snapshot_expired`. The response also carries a `task_id` cohort handle for the page so a follow-up `add_person_enrichments` can operate on these leads without re-passing lead_ids. Requires the `lists:read` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
 
         :param list_id: (required)
         :type list_id: str
@@ -2297,6 +2307,10 @@ class PublicLeadListsApi:
         :type limit: int
         :param cursor:
         :type cursor: str
+        :param snapshot_id:
+        :type snapshot_id: str
+        :param offset:
+        :type offset: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2323,6 +2337,8 @@ class PublicLeadListsApi:
             list_id=list_id,
             limit=limit,
             cursor=cursor,
+            snapshot_id=snapshot_id,
+            offset=offset,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2358,6 +2374,8 @@ class PublicLeadListsApi:
         list_id: StrictStr,
         limit: Optional[Annotated[int, Field(le=500, strict=True, ge=1)]] = None,
         cursor: Optional[StrictStr] = None,
+        snapshot_id: Optional[Annotated[str, Field(strict=True, max_length=512)]] = None,
+        offset: Optional[Annotated[int, Field(strict=True, ge=0)]] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2373,7 +2391,7 @@ class PublicLeadListsApi:
     ) -> RESTResponseType:
         """List leads in a list
 
-        Paginate leads in a list.  Fields like `first_name`, `last_name`, `title`, `company` come from the joined Prospect + Company relations — the Lead row itself only carries enrichment results (email, phone, linkedin URL).  Page forward with `limit` (1–500, default 100) and the opaque `cursor`. The response also carries a `task_id` cohort handle for the page so a follow-up `add_person_enrichments` can operate on these leads without re-passing lead_ids. Requires the `lists:read` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
+        Paginate leads in a list.  Fields like `first_name`, `last_name`, `title`, `company` come from the joined Prospect + Company relations — the Lead row itself only carries enrichment results (email, phone, linkedin URL).  Page forward with `limit` (1–500, default 100) and the opaque `cursor`, or with the response's `snapshot_id` plus an `offset`. Either way the walk reads one frozen order, so rows added meanwhile cause no duplicates or skips; a snapshot that has expired answers 409 `snapshot_expired`. The response also carries a `task_id` cohort handle for the page so a follow-up `add_person_enrichments` can operate on these leads without re-passing lead_ids. Requires the `lists:read` scope.  **📖 Docs:** https://docs.cleanlist.ai/api-reference/lead-lists · https://docs.cleanlist.ai/guides/managing-lists
 
         :param list_id: (required)
         :type list_id: str
@@ -2381,6 +2399,10 @@ class PublicLeadListsApi:
         :type limit: int
         :param cursor:
         :type cursor: str
+        :param snapshot_id:
+        :type snapshot_id: str
+        :param offset:
+        :type offset: int
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2407,6 +2429,8 @@ class PublicLeadListsApi:
             list_id=list_id,
             limit=limit,
             cursor=cursor,
+            snapshot_id=snapshot_id,
+            offset=offset,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -2437,6 +2461,8 @@ class PublicLeadListsApi:
         list_id,
         limit,
         cursor,
+        snapshot_id,
+        offset,
         _request_auth,
         _content_type,
         _headers,
@@ -2468,6 +2494,14 @@ class PublicLeadListsApi:
         if cursor is not None:
             
             _query_params.append(('cursor', cursor))
+            
+        if snapshot_id is not None:
+            
+            _query_params.append(('snapshot_id', snapshot_id))
+            
+        if offset is not None:
+            
+            _query_params.append(('offset', offset))
             
         # process the header parameters
         # process the form parameters

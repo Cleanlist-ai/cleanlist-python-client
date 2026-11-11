@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **agent_instructions** | **str** |  | [optional] 
 **usage** | **str** |  | [optional] 
 **message** | **str** |  | [optional] 
+**snapshot_id** | **str** |  | [optional] 
 **presentation** | [**SearchPresentation**](SearchPresentation.md) |  | [optional] 
 **pending_imports** | [**List[PendingImportRow]**](PendingImportRow.md) |  | [optional] 
 **pending_import_total** | **int** |  | [optional] 

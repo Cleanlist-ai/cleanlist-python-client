@@ -39,8 +39,9 @@ class EnrichPersonRequest(BaseModel):
     enrichment_type: Optional[StrictStr] = None
     include_phone: Optional[StrictBool] = Field(default=False, description="Legacy scope toggle, kept for back-compat. false → 'partial', true → 'phone_only'. Ignored when enrichment_type is set.")
     quote_id: Optional[StrictStr] = None
+    phone_waterfall: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["lead_list_id", "email", "linkedin_url", "phone", "first_name", "last_name", "company_name", "domain", "person_id", "enrichment_type", "include_phone", "quote_id"]
+    __properties: ClassVar[List[str]] = ["lead_list_id", "email", "linkedin_url", "phone", "first_name", "last_name", "company_name", "domain", "person_id", "enrichment_type", "include_phone", "quote_id", "phone_waterfall"]
 
     @field_validator('enrichment_type')
     def enrichment_type_validate_enum(cls, value):
@@ -50,6 +51,16 @@ class EnrichPersonRequest(BaseModel):
 
         if value not in set(['partial', 'phone_only', 'full']):
             raise ValueError("must be one of enum values ('partial', 'phone_only', 'full')")
+        return value
+
+    @field_validator('phone_waterfall')
+    def phone_waterfall_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['standard', 'gb']):
+            raise ValueError("must be one of enum values ('standard', 'gb')")
         return value
 
     model_config = ConfigDict(
@@ -148,6 +159,11 @@ class EnrichPersonRequest(BaseModel):
         if self.quote_id is None and "quote_id" in self.model_fields_set:
             _dict['quote_id'] = None
 
+        # set to None if phone_waterfall (nullable) is None
+        # and model_fields_set contains the field
+        if self.phone_waterfall is None and "phone_waterfall" in self.model_fields_set:
+            _dict['phone_waterfall'] = None
+
         return _dict
 
     @classmethod
@@ -171,7 +187,8 @@ class EnrichPersonRequest(BaseModel):
             "person_id": obj.get("person_id"),
             "enrichment_type": obj.get("enrichment_type"),
             "include_phone": obj.get("include_phone") if obj.get("include_phone") is not None else False,
-            "quote_id": obj.get("quote_id")
+            "quote_id": obj.get("quote_id"),
+            "phone_waterfall": obj.get("phone_waterfall")
         })
         # store additional fields in additional_properties
         for _key in obj.keys():

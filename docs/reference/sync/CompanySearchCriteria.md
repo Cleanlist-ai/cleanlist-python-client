@@ -55,6 +55,7 @@ Name | Type | Description | Notes
 **stock_symbols** | **List[str]** | Stock ticker symbols to include. | [optional] 
 **domains_list** | **List[str]** | Exact company domains to match; URLs are reduced to hosts. | [optional] 
 **company_names_list** | **List[str]** | Exact, case-sensitive company names to match. | [optional] 
+**linkedin_urls** | **List[str]** | Company LinkedIn page URLs to match exactly; normalized to https://www.linkedin.com/company/&lt;slug&gt;. Values that are not a company page are dropped. | [optional] 
 **twitter_handle** | **str** | Exact Twitter handle; a leading @ is kept. | [optional] [default to '']
 **description_keyword** | **str** | Keyword matched against the LinkedIn company description. | [optional] [default to '']
 **updated_after** | **str** | Crustdata updated_at floor, sent verbatim. | [optional] [default to '']

@@ -30,10 +30,11 @@ class CsvImportRequest(BaseModel):
     column_mapping: Dict[str, Optional[StrictStr]] = Field(description="{ canonical_field: csv_header_name }. The MCP agent reads the CSV header line and supplies the mapping; the server never guesses. CSV columns not mapped are dropped. Mapping a field that isn't in the CSV header returns 400 missing_column with the bad header name in `details`.")
     dispatch_enrichment: Optional[StrictBool] = Field(default=True, description="When True (default), the import dispatches a BulkEnrichmentWorkflow immediately after the RawPeople rows land. When False, rows land as RawPerson(status=pending) and the caller dispatches enrichment separately via enrich_list.")
     enrichment_type: Optional[StrictStr] = None
+    phone_waterfall: Optional[StrictStr] = None
     quote_id: Optional[StrictStr] = None
     idempotency_key: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["csv_content_base64", "column_mapping", "dispatch_enrichment", "enrichment_type", "quote_id", "idempotency_key"]
+    __properties: ClassVar[List[str]] = ["csv_content_base64", "column_mapping", "dispatch_enrichment", "enrichment_type", "phone_waterfall", "quote_id", "idempotency_key"]
 
     @field_validator('enrichment_type')
     def enrichment_type_validate_enum(cls, value):
@@ -43,6 +44,16 @@ class CsvImportRequest(BaseModel):
 
         if value not in set(['partial', 'phone_only', 'full']):
             raise ValueError("must be one of enum values ('partial', 'phone_only', 'full')")
+        return value
+
+    @field_validator('phone_waterfall')
+    def phone_waterfall_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['standard', 'gb']):
+            raise ValueError("must be one of enum values ('standard', 'gb')")
         return value
 
     model_config = ConfigDict(
@@ -96,6 +107,11 @@ class CsvImportRequest(BaseModel):
         if self.enrichment_type is None and "enrichment_type" in self.model_fields_set:
             _dict['enrichment_type'] = None
 
+        # set to None if phone_waterfall (nullable) is None
+        # and model_fields_set contains the field
+        if self.phone_waterfall is None and "phone_waterfall" in self.model_fields_set:
+            _dict['phone_waterfall'] = None
+
         # set to None if quote_id (nullable) is None
         # and model_fields_set contains the field
         if self.quote_id is None and "quote_id" in self.model_fields_set:
@@ -122,6 +138,7 @@ class CsvImportRequest(BaseModel):
             "column_mapping": obj.get("column_mapping"),
             "dispatch_enrichment": obj.get("dispatch_enrichment") if obj.get("dispatch_enrichment") is not None else True,
             "enrichment_type": obj.get("enrichment_type"),
+            "phone_waterfall": obj.get("phone_waterfall"),
             "quote_id": obj.get("quote_id"),
             "idempotency_key": obj.get("idempotency_key")
         })

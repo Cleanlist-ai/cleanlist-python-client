@@ -22,7 +22,7 @@ Name | Type | Description | Notes
 **results** | [**List[PeopleSearchResultRow]**](PeopleSearchResultRow.md) |  | 
 **total** | **int** |  | 
 **cursor** | **str** |  | [optional] 
-**credits_charged** | **int** |  | 
+**credits_charged** | **float** | Credits this page cost: 0 unless the org has a per-row search price. | 
 **truncation_warning** | **str** |  | [optional] 
 
 ## Example

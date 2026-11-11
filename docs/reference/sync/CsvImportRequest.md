@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **column_mapping** | **Dict[str, Optional[str]]** | { canonical_field: csv_header_name }. The MCP agent reads the CSV header line and supplies the mapping; the server never guesses. CSV columns not mapped are dropped. Mapping a field that isn&#39;t in the CSV header returns 400 missing_column with the bad header name in &#x60;details&#x60;. | 
 **dispatch_enrichment** | **bool** | When True (default), the import dispatches a BulkEnrichmentWorkflow immediately after the RawPeople rows land. When False, rows land as RawPerson(status&#x3D;pending) and the caller dispatches enrichment separately via enrich_list. | [optional] [default to True]
 **enrichment_type** | **str** |  | [optional] 
+**phone_waterfall** | **str** |  | [optional] 
 **quote_id** | **str** |  | [optional] 
 **idempotency_key** | **str** |  | [optional] 
 

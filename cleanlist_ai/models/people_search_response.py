@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from cleanlist_ai.models.cohort_summary import CohortSummary
 from cleanlist_ai.models.people_search_result_row import PeopleSearchResultRow
 from cleanlist_ai.models.search_handoff import SearchHandoff
@@ -47,7 +47,7 @@ class PeopleSearchResponse(BaseModel):
     results: List[PeopleSearchResultRow]
     total: Optional[StrictInt]
     cursor: Optional[StrictStr] = None
-    credits_charged: StrictInt
+    credits_charged: Union[StrictFloat, StrictInt] = Field(description="Credits this page cost: 0 unless the org has a per-row search price.")
     truncation_warning: Optional[StrictStr] = None
     additional_properties: Dict[str, Any] = {}
     __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "entity_kind", "search_handoff", "cohort", "presentation", "criteria_applied", "company_criteria_applied", "route", "warnings", "exclusions_applied", "results", "total", "cursor", "credits_charged", "truncation_warning"]
