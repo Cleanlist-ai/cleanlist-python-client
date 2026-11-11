@@ -20,6 +20,8 @@ import os
 import time
 from typing import Optional
 
+from urllib3.util.retry import Retry
+
 from cleanlist_ai.api_client import ApiClient
 from cleanlist_ai.retry import (
     DEFAULT_MAX_ATTEMPTS,
@@ -41,6 +43,12 @@ DEFAULT_HOST = "https://api.cleanlist.ai"
 
 #: Environment variable read when ``access_token`` is not passed explicitly.
 API_KEY_ENV_VAR = "CLEANLIST_API_KEY"
+
+#: urllib3's own retries, kept for a dropped connection but never for a
+#: status: its default honors Retry-After on 429 and 503 before
+#: ``RetryingApiClient`` sees the response, past ``max_attempts`` and the
+#: one-minute wait cap.
+TRANSPORT_RETRIES = Retry(3, respect_retry_after_header=False)
 
 
 class RetryingApiClient(ApiClient):
@@ -121,6 +129,8 @@ class Cleanlist:
             configuration.access_token = access_token
             if host != DEFAULT_HOST:
                 configuration.host = host
+        if configuration.retries is None:
+            configuration.retries = TRANSPORT_RETRIES
 
         self.configuration = configuration
         self.api_client = RetryingApiClient(configuration, max_attempts)

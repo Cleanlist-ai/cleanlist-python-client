@@ -176,3 +176,36 @@ def test_verify_webhook_signature():
     assert verify_webhook_signature(body, "v1=" + "0" * 64 + "," + header, "whsec", now=now)
     for junk in (None, "", "garbage", "t=abc,v1=" + "0" * 64, f"t={now}", f"t={now},v1=zz", "t=²,v1=" + "0" * 64):
         assert not verify_webhook_signature(body, junk, "whsec", now=now)
+
+
+def test_a_429_is_retried_only_max_attempts_times_over_a_real_connection():
+    """urllib3 honors Retry-After on its own unless told not to: max_attempts=1
+    made 4 requests and the default 12, past the one-minute wait cap."""
+    import threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    hits = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            hits.append(self.command)
+            self.send_response(429)
+            self.send_header("Retry-After", "0")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+
+        def log_message(self, *_args):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    host = f"http://127.0.0.1:{server.server_address[1]}"
+    try:
+        for attempts in (1, 2):
+            hits.clear()
+            cl = Cleanlist("clapi_test_stub", host=host, max_attempts=attempts)
+            response = cl.api_client.call_api("GET", host + "/api/v2/whoami", {})
+            assert response.status == 429
+            assert len(hits) == attempts
+    finally:
+        server.shutdown()
