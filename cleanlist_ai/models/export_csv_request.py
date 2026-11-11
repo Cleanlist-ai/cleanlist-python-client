@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -29,8 +30,9 @@ class ExportCsvRequest(BaseModel):
     list_id: StrictStr = Field(description="ID of the Lead List to export. Must be a list your API key is authorized to read.")
     columns: Optional[List[StrictStr]] = None
     include_smart_agents: Optional[StrictBool] = Field(default=True, description="Append the list's configured smart-agent result columns after the selected columns. Set false to export only the base columns.")
+    job_id: Optional[Annotated[str, Field(strict=True, max_length=64)]] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["list_id", "columns", "include_smart_agents"]
+    __properties: ClassVar[List[str]] = ["list_id", "columns", "include_smart_agents", "job_id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,6 +85,11 @@ class ExportCsvRequest(BaseModel):
         if self.columns is None and "columns" in self.model_fields_set:
             _dict['columns'] = None
 
+        # set to None if job_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.job_id is None and "job_id" in self.model_fields_set:
+            _dict['job_id'] = None
+
         return _dict
 
     @classmethod
@@ -97,7 +104,8 @@ class ExportCsvRequest(BaseModel):
         _obj = cls.model_validate({
             "list_id": obj.get("list_id"),
             "columns": obj.get("columns"),
-            "include_smart_agents": obj.get("include_smart_agents") if obj.get("include_smart_agents") is not None else True
+            "include_smart_agents": obj.get("include_smart_agents") if obj.get("include_smart_agents") is not None else True,
+            "job_id": obj.get("job_id")
         })
         # store additional fields in additional_properties
         for _key in obj.keys():

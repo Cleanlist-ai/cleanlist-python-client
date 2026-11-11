@@ -31,7 +31,8 @@ class EnrichListRequest(BaseModel):
     scope: Optional[StrictStr] = Field(default='partial', description="Enrichment scope per lead. 'partial' = email + LinkedIn + title + company (1 credit); 'phone-only' = phone only (10 credits); 'full' = email AND phone (11 credits).")
     quote_id: StrictStr = Field(description="Required. Obtain via POST /credits/estimate first (bound to this list_id + scope + lead count). Bulk spend must be pre-approved; cost is capped at the quote's max_credits.")
     lead_ids: Optional[Annotated[List[StrictStr], Field(min_length=1, max_length=500)]] = None
-    __properties: ClassVar[List[str]] = ["list_id", "scope", "quote_id", "lead_ids"]
+    phone_waterfall: Optional[StrictStr] = None
+    __properties: ClassVar[List[str]] = ["list_id", "scope", "quote_id", "lead_ids", "phone_waterfall"]
 
     @field_validator('scope')
     def scope_validate_enum(cls, value):
@@ -41,6 +42,16 @@ class EnrichListRequest(BaseModel):
 
         if value not in set(['partial', 'full', 'phone-only']):
             raise ValueError("must be one of enum values ('partial', 'full', 'phone-only')")
+        return value
+
+    @field_validator('phone_waterfall')
+    def phone_waterfall_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['standard', 'gb']):
+            raise ValueError("must be one of enum values ('standard', 'gb')")
         return value
 
     model_config = ConfigDict(
@@ -87,6 +98,11 @@ class EnrichListRequest(BaseModel):
         if self.lead_ids is None and "lead_ids" in self.model_fields_set:
             _dict['lead_ids'] = None
 
+        # set to None if phone_waterfall (nullable) is None
+        # and model_fields_set contains the field
+        if self.phone_waterfall is None and "phone_waterfall" in self.model_fields_set:
+            _dict['phone_waterfall'] = None
+
         return _dict
 
     @classmethod
@@ -102,7 +118,8 @@ class EnrichListRequest(BaseModel):
             "list_id": obj.get("list_id"),
             "scope": obj.get("scope") if obj.get("scope") is not None else 'partial',
             "quote_id": obj.get("quote_id"),
-            "lead_ids": obj.get("lead_ids")
+            "lead_ids": obj.get("lead_ids"),
+            "phone_waterfall": obj.get("phone_waterfall")
         })
         return _obj
 

@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,11 +27,24 @@ class ExportCsvResponse(BaseModel):
     ExportCsvResponse
     """ # noqa: E501
     list_id: StrictStr = Field(description="ID of the Lead List that was exported.")
-    download_url: StrictStr = Field(description="Time-limited, SAS-signed URL to download the generated CSV file. The signature (`sig`) and expiry (`exp`) query params gate access; the link stops working after `expires_at`.")
-    expires_at: StrictStr = Field(description="ISO-8601 UTC timestamp at which `download_url` expires. Generated URLs are valid for 24 hours.")
-    row_count: StrictInt = Field(description="Number of data rows written to the CSV (excludes the header row).")
-    file_size_bytes: StrictInt = Field(description="Size of the generated CSV file in bytes.")
-    __properties: ClassVar[List[str]] = ["list_id", "download_url", "expires_at", "row_count", "file_size_bytes"]
+    job_id: Optional[StrictStr] = None
+    status: Optional[StrictStr] = Field(default='completed', description="`completed` with a `download_url`, or `running` (HTTP 202): call again with `job_id`.")
+    download_url: Optional[StrictStr] = None
+    expires_at: Optional[StrictStr] = None
+    row_count: StrictInt = Field(description="Number of data rows written to the CSV (excludes the header row); while running, the rows being exported.")
+    file_size_bytes: Optional[StrictInt] = None
+    skipped_count: Optional[StrictInt] = Field(default=0, description="Rows of the list that changed while it was exporting (deleted, or merged into another row) and are not in the file. `row_count` + `skipped_count` is the list's row count when the export started.")
+    __properties: ClassVar[List[str]] = ["list_id", "job_id", "status", "download_url", "expires_at", "row_count", "file_size_bytes", "skipped_count"]
+
+    @field_validator('status')
+    def status_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['running', 'completed']):
+            raise ValueError("must be one of enum values ('running', 'completed')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -72,6 +85,26 @@ class ExportCsvResponse(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if job_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.job_id is None and "job_id" in self.model_fields_set:
+            _dict['job_id'] = None
+
+        # set to None if download_url (nullable) is None
+        # and model_fields_set contains the field
+        if self.download_url is None and "download_url" in self.model_fields_set:
+            _dict['download_url'] = None
+
+        # set to None if expires_at (nullable) is None
+        # and model_fields_set contains the field
+        if self.expires_at is None and "expires_at" in self.model_fields_set:
+            _dict['expires_at'] = None
+
+        # set to None if file_size_bytes (nullable) is None
+        # and model_fields_set contains the field
+        if self.file_size_bytes is None and "file_size_bytes" in self.model_fields_set:
+            _dict['file_size_bytes'] = None
+
         return _dict
 
     @classmethod
@@ -85,10 +118,13 @@ class ExportCsvResponse(BaseModel):
 
         _obj = cls.model_validate({
             "list_id": obj.get("list_id"),
+            "job_id": obj.get("job_id"),
+            "status": obj.get("status") if obj.get("status") is not None else 'completed',
             "download_url": obj.get("download_url"),
             "expires_at": obj.get("expires_at"),
             "row_count": obj.get("row_count"),
-            "file_size_bytes": obj.get("file_size_bytes")
+            "file_size_bytes": obj.get("file_size_bytes"),
+            "skipped_count": obj.get("skipped_count") if obj.get("skipped_count") is not None else 0
         })
         return _obj
 

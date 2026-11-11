@@ -17,6 +17,7 @@ Name | Type | Description | Notes
 **enrichment_type** | **str** |  | [optional] 
 **include_phone** | **bool** | Legacy scope toggle, kept for back-compat. false → &#39;partial&#39;, true → &#39;phone_only&#39;. Ignored when enrichment_type is set. | [optional] [default to False]
 **quote_id** | **str** |  | [optional] 
+**phone_waterfall** | **str** |  | [optional] 
 
 ## Example
 

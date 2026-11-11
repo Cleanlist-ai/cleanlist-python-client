@@ -55,7 +55,7 @@ class PeopleSearchCriteria(BaseModel):
     school_names: Optional[List[StrictStr]] = Field(default=None, description="Institution names, matched exactly.", alias="schoolNames")
     fields_of_study: Optional[List[StrictStr]] = Field(default=None, description="Fields of study, matched exactly.", alias="fieldsOfStudy")
     certification_keywords: Optional[List[StrictStr]] = Field(default=None, description="Certification names, matched exactly.", alias="certificationKeywords")
-    company_name_filter: Optional[StrictStr] = Field(default='', description="One current employer name, ANDed.", alias="companyNameFilter")
+    company_name_filter: Optional[StrictStr] = Field(default='', description="One current employer name, or a website domain, as typed. With current_company_names, domains or LinkedIn URLs it is one more alternative (ORed); alone, a domain matches the employer's website exactly and a name matches by company_name_match_type.", alias="companyNameFilter")
     company_name_match_type: Optional[StrictStr] = Field(default='contains', description="How employer NAMES match — governs both company_name_filter and current_company_names: contains (substring), exact, or similar. Domains and LinkedIn URLs are always exact.", alias="companyNameMatchType")
     first_name: Optional[StrictStr] = Field(default='', description="First name, exact.", alias="firstName")
     last_name: Optional[StrictStr] = Field(default='', description="Last name, exact.", alias="lastName")

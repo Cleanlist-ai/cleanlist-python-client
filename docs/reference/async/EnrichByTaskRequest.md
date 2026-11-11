@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **entity_ids** | **List[str]** |  | [optional] 
 **lead_list_id** | **str** |  | [optional] 
 **quote_id** | **str** |  | [optional] 
+**phone_waterfall** | **str** |  | [optional] 
 
 ## Example
 
