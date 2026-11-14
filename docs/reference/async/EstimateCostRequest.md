@@ -25,7 +25,10 @@ Name | Type | Description | Notes
 **enrichment_type** | **str** |  | [optional] 
 **task_id** | **str** |  | [optional] 
 **data_points** | **List[str]** |  | [optional] 
+**fields** | **List[str]** |  | [optional] 
 **entity_ids** | **List[str]** |  | [optional] 
+**agent_id** | **str** |  | [optional] 
+**playbook_id** | **str** |  | [optional] 
 **extra** | **object** |  | [optional] 
 
 ## Example

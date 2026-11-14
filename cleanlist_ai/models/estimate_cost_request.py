@@ -47,10 +47,13 @@ class EstimateCostRequest(BaseModel):
     enrichment_type: Optional[StrictStr] = None
     task_id: Optional[StrictStr] = None
     data_points: Optional[List[StrictStr]] = None
+    fields: Optional[List[StrictStr]] = None
     entity_ids: Optional[List[StrictStr]] = None
+    agent_id: Optional[StrictStr] = None
+    playbook_id: Optional[StrictStr] = None
     extra: Optional[Dict[str, Any]] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["tool", "list_id", "filters", "row_count", "scope", "agent_type", "column_name", "prompt", "template_id", "lead_scope", "max_rows", "overwrite", "include_phone", "provider", "sub_action", "campaign_id", "field_mapping", "enrichment_type", "task_id", "data_points", "entity_ids", "extra"]
+    __properties: ClassVar[List[str]] = ["tool", "list_id", "filters", "row_count", "scope", "agent_type", "column_name", "prompt", "template_id", "lead_scope", "max_rows", "overwrite", "include_phone", "provider", "sub_action", "campaign_id", "field_mapping", "enrichment_type", "task_id", "data_points", "fields", "entity_ids", "agent_id", "playbook_id", "extra"]
 
     @field_validator('lead_scope')
     def lead_scope_validate_enum(cls, value):
@@ -183,10 +186,25 @@ class EstimateCostRequest(BaseModel):
         if self.data_points is None and "data_points" in self.model_fields_set:
             _dict['data_points'] = None
 
+        # set to None if fields (nullable) is None
+        # and model_fields_set contains the field
+        if self.fields is None and "fields" in self.model_fields_set:
+            _dict['fields'] = None
+
         # set to None if entity_ids (nullable) is None
         # and model_fields_set contains the field
         if self.entity_ids is None and "entity_ids" in self.model_fields_set:
             _dict['entity_ids'] = None
+
+        # set to None if agent_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.agent_id is None and "agent_id" in self.model_fields_set:
+            _dict['agent_id'] = None
+
+        # set to None if playbook_id (nullable) is None
+        # and model_fields_set contains the field
+        if self.playbook_id is None and "playbook_id" in self.model_fields_set:
+            _dict['playbook_id'] = None
 
         # set to None if extra (nullable) is None
         # and model_fields_set contains the field
@@ -225,7 +243,10 @@ class EstimateCostRequest(BaseModel):
             "enrichment_type": obj.get("enrichment_type"),
             "task_id": obj.get("task_id"),
             "data_points": obj.get("data_points"),
+            "fields": obj.get("fields"),
             "entity_ids": obj.get("entity_ids"),
+            "agent_id": obj.get("agent_id"),
+            "playbook_id": obj.get("playbook_id"),
             "extra": obj.get("extra")
         })
         # store additional fields in additional_properties
