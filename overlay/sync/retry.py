@@ -7,9 +7,12 @@ Hand-authored (not generated) and re-applied on every regeneration by
 from __future__ import annotations
 
 import email.utils
+import json
 import random
+import re
 import time
 import uuid
+from urllib.parse import urlsplit
 from dataclasses import dataclass
 from typing import Any, Dict, Mapping, Optional
 
@@ -24,6 +27,10 @@ MAX_RETRY_DELAY = 60.0
 WRITE_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
 IDEMPOTENCY_HEADER = "Idempotency-Key"
+
+#: Single-use writes that are never retried: a second try after a lost
+#: response can't be told apart from a repeat.
+_NEVER_RETRY_PATH = re.compile(r"/api/v2/(actions/confirm|inbox/threads/[^/]+/reply)/?$")
 
 
 @dataclass(frozen=True)
@@ -95,9 +102,47 @@ def add_idempotency_key(method: str, headers: Optional[Dict[str, Any]]) -> Dict[
     return headers
 
 
-def can_retry(method: str, headers: Optional[Mapping[str, Any]]) -> bool:
-    """Reads always; a write only when it carries an ``Idempotency-Key``, so a retry can't run it twice."""
+def can_retry(method: str, url: str) -> bool:
+    """False for ``POST /api/v2/actions/confirm`` and inbox replies, whatever the outcome."""
+    if method.upper() not in WRITE_METHODS:
+        return True
+    return not _NEVER_RETRY_PATH.search(urlsplit(url).path)
+
+
+def can_retry_network_error(method: str, headers: Optional[Mapping[str, Any]]) -> bool:
+    """No response came back. Reads always; a write only with an ``Idempotency-Key``."""
     return method.upper() not in WRITE_METHODS or bool(_header(headers, IDEMPOTENCY_HEADER))
+
+
+def _error_code(body: Optional[bytes]) -> Optional[str]:
+    try:
+        payload = json.loads(body or b"")
+    except (TypeError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    error = payload.get("error")
+    return error.get("code") if isinstance(error, dict) else payload.get("code")
+
+
+def can_retry_status(method: str, status: int, body: Optional[bytes]) -> bool:
+    """Reads retry on 429 and 5xx. Writes retry on 429 and a 503 ``idempotency_unavailable``
+    (refused before the route ran); any other 5xx may have run the route, and the server
+    doesn't store 5xx under the key, so a retry would run it again."""
+    if status == 429:
+        return True
+    if method.upper() not in WRITE_METHODS:
+        return status >= 500
+    return status == 503 and _error_code(body) == "idempotency_unavailable"
+
+
+def _backoff(attempt: int) -> float:
+    return min(8.0, 0.5 * 2 ** (attempt - 1)) + random.uniform(0, 0.25)
+
+
+def network_retry_delay(attempt: int, max_attempts: int) -> Optional[float]:
+    """Seconds to wait before try ``attempt + 1`` after a network error, or ``None`` to raise."""
+    return None if attempt >= max_attempts else _backoff(attempt)
 
 
 def _parse_retry_after(value: Optional[str]) -> Optional[float]:
@@ -122,7 +167,7 @@ def retry_delay(status: int, retry_after: Optional[str], attempt: int, max_attem
         return None
     delay = _parse_retry_after(retry_after)
     if delay is None:
-        delay = min(8.0, 0.5 * 2 ** (attempt - 1)) + random.uniform(0, 0.25)
+        delay = _backoff(attempt)
     if delay > MAX_RETRY_DELAY:
         return None
     return delay

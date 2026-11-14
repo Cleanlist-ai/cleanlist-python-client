@@ -13,7 +13,7 @@ from cleanlist_ai import rest
 from cleanlist_ai.aio import Cleanlist as AsyncCleanlist
 from cleanlist_ai.aio import CreateListRequest as AsyncCreateListRequest
 from cleanlist_ai.aio import rest as aio_rest
-from cleanlist_ai.retry import RateLimit, can_retry, retry_delay
+from cleanlist_ai.retry import RateLimit, can_retry, can_retry_network_error, can_retry_status, retry_delay
 
 LIST = {"list_id": "l1", "name": "Q3", "lead_count": 0, "enriched_count": 0}
 RATE_HEADERS = {
@@ -79,7 +79,8 @@ def waits(monkeypatch):
 def test_retries_429_and_5xx_with_one_idempotency_key(waits):
     cl = Cleanlist("clapi_live_abc", host="https://x")
     first = FakeResp(429, headers={"Retry-After": "2"})
-    calls = install(cl, [first, FakeResp(503, headers={"Retry-After": "0"}), FakeResp(200, LIST, RATE_HEADERS)])
+    unavailable = FakeResp(503, {"error": {"code": "idempotency_unavailable"}}, {"Retry-After": "0"})
+    calls = install(cl, [first, unavailable, FakeResp(200, LIST, RATE_HEADERS)])
     lst = cl.lead_lists.create_list(CreateListRequest(name="Q3"))
     assert lst.list_id == "l1"
     assert len(calls) == 3
@@ -162,13 +163,102 @@ def test_new_route_write_retries_idempotency_unavailable_with_its_key(waits):
     assert calls[0]["url"].endswith("/api/v2/gtm-agents/ag_1/runs")
 
 
-def test_reads_always_retry_writes_only_with_a_key():
-    assert can_retry("GET", None)
-    assert can_retry("get", {})
-    assert not can_retry("POST", {})
-    assert not can_retry("PATCH", {"Idempotency-Key": ""})
-    assert can_retry("POST", {"idempotency-key": "k"})
-    assert can_retry("DELETE", {"Idempotency-Key": "k"})
+def test_a_500_or_502_on_a_post_is_not_retried(waits):
+    for status in (500, 502):
+        cl = Cleanlist("clapi_live_abc", host="https://x")
+        calls = install(cl, [FakeResp(status), FakeResp(200, LIST)])
+        with pytest.raises(ApiException) as err:
+            cl.lead_lists.create_list(CreateListRequest(name="Q3"))
+        assert err.value.status == status
+        assert len(calls) == 1
+    assert waits == []
+
+
+def test_a_429_on_a_post_is_retried(waits):
+    cl = Cleanlist("clapi_live_abc", host="https://x")
+    calls = install(cl, [FakeResp(429), FakeResp(200, LIST)])
+    assert cl.lead_lists.create_list(CreateListRequest(name="Q3")).list_id == "l1"
+    assert len(calls) == 2
+
+
+def test_a_get_500_is_still_retried(waits):
+    cl = Cleanlist("clapi_live_abc", host="https://x")
+    calls = install(cl, [FakeResp(500), FakeResp(200, LIST)])
+    cl.api_client.call_api("GET", "https://x/api/v2/lists", {})
+    assert len(calls) == 2
+
+
+def test_inbox_reply_and_confirm_are_never_retried(waits):
+    cases = [
+        ("https://x/api/v2/inbox/threads/t1/reply", FakeResp(502, {"error": {"code": "send_unconfirmed"}})),
+        ("https://x/api/v2/inbox/threads/t1/reply", FakeResp(429)),
+        ("https://x/api/v2/actions/confirm", FakeResp(500)),
+        ("https://x/api/v2/actions/confirm?x=1", FakeResp(429)),
+        ("https://x/api/v2/actions/confirm", FakeResp(503, {"error": {"code": "idempotency_unavailable"}})),
+    ]
+    for url, first in cases:
+        cl = Cleanlist("clapi_live_abc", host="https://x")
+        calls = install(cl, [first, FakeResp(200, LIST)])
+        response = cl.api_client.call_api("POST", url, {})
+        assert response.status == first.status, url
+        assert len(calls) == 1, url
+    assert waits == []
+
+
+def test_async_inbox_reply_502_is_not_retried(waits):
+    async def run():
+        cl = AsyncCleanlist("clapi_live_abc", host="https://x")
+        calls = install(cl, [AsyncFakeResp(502), AsyncFakeResp(200)], aio=True)
+        response = await cl.api_client.call_api("POST", "https://x/api/v2/inbox/threads/t1/reply", {})
+        await cl.close()
+        return response, calls
+
+    response, calls = asyncio.run(run())
+    assert response.status == 502 and len(calls) == 1
+
+
+def test_network_errors_retry_reads_and_keyed_writes_only(waits):
+    import urllib3
+
+    def flaky(cl):
+        calls = []
+
+        def request(method, url, headers=None, body=None, post_params=None, _request_timeout=None):
+            calls.append(method)
+            if len(calls) == 1:
+                raise urllib3.exceptions.ProtocolError("connection reset")
+            return rest.RESTResponse(FakeResp(200, LIST))
+
+        cl.api_client.rest_client.request = request
+        return calls
+
+    cl = Cleanlist("clapi_live_abc", host="https://x")
+    for method, url in (("GET", "https://x/api/v2/lists"), ("POST", "https://x/api/v2/lists")):
+        calls = flaky(cl)
+        assert cl.api_client.call_api(method, url, {}).status == 200
+        assert len(calls) == 2
+    calls = flaky(cl)
+    with pytest.raises(urllib3.exceptions.ProtocolError):
+        cl.api_client.call_api("POST", "https://x/api/v2/actions/confirm", {})
+    assert len(calls) == 1
+
+
+def test_retry_policy_helpers():
+    assert can_retry("GET", "https://x/api/v2/actions/confirm")
+    assert can_retry("POST", "https://x/api/v2/lists")
+    assert not can_retry("post", "https://x/api/v2/actions/confirm/")
+    assert not can_retry("POST", "https://x/api/v2/inbox/threads/t1/reply")
+    assert can_retry_network_error("GET", None)
+    assert not can_retry_network_error("POST", {})
+    assert not can_retry_network_error("PATCH", {"Idempotency-Key": ""})
+    assert can_retry_network_error("POST", {"idempotency-key": "k"})
+    assert can_retry_status("GET", 500, None)
+    assert can_retry_status("POST", 429, None)
+    assert not can_retry_status("POST", 500, None)
+    assert not can_retry_status("POST", 503, b'{"error": {"code": "service_unavailable"}}')
+    assert can_retry_status("POST", 503, b'{"error": {"code": "idempotency_unavailable"}}')
+    assert not can_retry_status("POST", 503, b"<html>bad gateway</html>")
+    assert not can_retry_status("GET", 422, None)
 
 
 def test_facade_exposes_every_resource_group():

@@ -20,6 +20,7 @@ import os
 import time
 from typing import Optional
 
+import urllib3
 from urllib3.util.retry import Retry
 
 from cleanlist_ai.api_client import ApiClient
@@ -28,6 +29,9 @@ from cleanlist_ai.retry import (
     ResponseMeta,
     add_idempotency_key,
     can_retry,
+    can_retry_network_error,
+    can_retry_status,
+    network_retry_delay,
     read_response_meta,
     retry_delay,
 )
@@ -53,19 +57,21 @@ DEFAULT_HOST = "https://api.cleanlist.ai"
 #: Environment variable read when ``access_token`` is not passed explicitly.
 API_KEY_ENV_VAR = "CLEANLIST_API_KEY"
 
-#: urllib3's own retries, kept for a dropped connection but never for a
-#: status: its default honors Retry-After on 429 and 503 before
-#: ``RetryingApiClient`` sees the response, past ``max_attempts`` and the
-#: one-minute wait cap.
-TRANSPORT_RETRIES = Retry(3, respect_retry_after_header=False)
+#: urllib3's own retries, kept for redirects only. Its default honors
+#: Retry-After on 429 and 503 before ``RetryingApiClient`` sees the response,
+#: and retries dropped connections whatever the method; ``RetryingApiClient``
+#: decides both instead.
+TRANSPORT_RETRIES = Retry(3, connect=0, read=0, other=0, respect_retry_after_header=False)
 
 
 class RetryingApiClient(ApiClient):
-    """``ApiClient`` that retries 429s and 5xx and keys writes for idempotency.
+    """``ApiClient`` that retries what the server can't have run and keys writes for idempotency.
 
     Each write gets one ``Idempotency-Key`` (a key passed in ``_headers`` wins),
-    reused on its retries so a retried write runs once. Waits honor
-    ``Retry-After``; a wait over a minute returns the response instead.
+    reused on its retries. Reads retry on network errors, 429s and 5xx. Writes
+    retry on 429s, a 503 ``idempotency_unavailable`` and, with a key, a network
+    error; never on another 5xx. Confirms and inbox replies never retry. Waits
+    honor ``Retry-After``; a wait over a minute returns the response instead.
     """
 
     def __init__(self, configuration: Configuration, max_attempts: int = DEFAULT_MAX_ATTEMPTS) -> None:
@@ -76,10 +82,21 @@ class RetryingApiClient(ApiClient):
 
     def call_api(self, method, url, header_params=None, body=None, post_params=None, _request_timeout=None):
         header_params = add_idempotency_key(method, header_params)
-        max_attempts = self.max_attempts if can_retry(method, header_params) else 1
+        max_attempts = self.max_attempts if can_retry(method, url) else 1
         attempt = 1
         while True:
-            response = super().call_api(method, url, header_params, body, post_params, _request_timeout)
+            try:
+                response = super().call_api(method, url, header_params, body, post_params, _request_timeout)
+            except urllib3.exceptions.HTTPError:
+                delay = network_retry_delay(attempt, max_attempts)
+                if delay is None or not can_retry_network_error(method, header_params):
+                    raise
+                time.sleep(delay)
+                attempt += 1
+                continue
+            error_body = response.read() if response.status == 503 else None
+            if not can_retry_status(method, response.status, error_body):
+                break
             delay = retry_delay(response.status, response.getheader("Retry-After"), attempt, max_attempts)
             if delay is None:
                 break
@@ -104,7 +121,7 @@ class Cleanlist:
         advanced needs (proxies, timeouts, retries); ``access_token`` / ``host``
         are applied on top of it when given.
     :param max_attempts: Tries per request, the first included (default 3).
-        429s and 5xx are retried with backoff, honoring ``Retry-After``; writes
+        Retries follow ``RetryingApiClient``, honoring ``Retry-After``; writes
         carry an ``Idempotency-Key`` that stays the same across retries. Pass
         ``_headers={"Idempotency-Key": "..."}`` on a call to set your own.
         ``1`` turns retries off.

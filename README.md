@@ -452,11 +452,15 @@ Runnable scripts live in [`examples/`](examples/) (setup notes in
 
 ## Retries, idempotency and rate limits
 
-A 429 or 5xx is retried with backoff, honoring `Retry-After` (a wait over a minute is
-returned to you instead). Reads are always retried. A write (POST, PUT, PATCH, DELETE) is
-retried only with an `Idempotency-Key`, and the client adds one to every write and keeps it
-the same across its retries, so a retried write runs once. A replay of a stored response
-comes back with `Idempotent-Replayed: true`. To set your own:
+GET, HEAD and OPTIONS are retried on network errors, 429 and 5xx, with backoff that honors
+`Retry-After` (a wait over a minute is returned to you instead). POST, PUT, PATCH and DELETE
+are retried only on a 429, a 503 `idempotency_unavailable`, or a network error with no
+response when the request carries an `Idempotency-Key`, because any other 5xx may mean the
+write already ran. `POST /api/v2/actions/confirm` and inbox replies are never retried.
+
+The client adds an `Idempotency-Key` to every write and keeps it the same across its
+retries. A replay of a stored response comes back with `Idempotent-Replayed: true`. To set
+your own:
 
 ```python
 cl.lead_lists.create_list(CreateListRequest(name="Q3"), _headers={"Idempotency-Key": "order-1234"})
