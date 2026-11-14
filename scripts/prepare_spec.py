@@ -89,6 +89,27 @@ def collapse_numeric_anyof(node) -> int:
     return count
 
 
+def drop_boolean_const(node) -> int:
+    """Drop ``const`` from boolean schemas.
+
+    The python generator turns ``{"type": "boolean", "const": false}`` into a
+    string enum validator that only accepts ``'false'``, so a real ``false``
+    (LivePreview.committed on every live preview) fails to decode. The type and
+    the default stay. Returns the number of schemas changed.
+    """
+    count = 0
+    if isinstance(node, dict):
+        if node.get("type") == "boolean" and "const" in node:
+            del node["const"]
+            count += 1
+        for value in node.values():
+            count += drop_boolean_const(value)
+    elif isinstance(node, list):
+        for value in node:
+            count += drop_boolean_const(value)
+    return count
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(__doc__)
@@ -116,6 +137,7 @@ def main() -> int:
 
     collapsed = collapse_freeform_anyof(spec)
     collapsed += collapse_numeric_anyof(spec)
+    collapsed += drop_boolean_const(spec)
 
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(json.dumps(spec, indent=2))

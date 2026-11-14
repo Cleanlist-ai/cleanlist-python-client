@@ -4,12 +4,207 @@ All URIs are relative to *https://api.cleanlist.ai*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**batch_companies_lookup**](PublicEnrichmentApi.md#batch_companies_lookup) | **POST** /api/v2/batch/companies/lookup | Look up a batch of companies
+[**batch_people_lookup**](PublicEnrichmentApi.md#batch_people_lookup) | **POST** /api/v2/batch/people/lookup | Look up a batch of people
 [**enrich_by_task**](PublicEnrichmentApi.md#enrich_by_task) | **POST** /api/v2/enrichment/by-task | Enrich entities from a prior task
 [**enrich_company**](PublicEnrichmentApi.md#enrich_company) | **POST** /api/v2/enrichment/company | Enrich a company
 [**enrich_list**](PublicEnrichmentApi.md#enrich_list) | **POST** /api/v2/enrichment/bulk | Enrich a whole lead list
 [**enrich_person**](PublicEnrichmentApi.md#enrich_person) | **POST** /api/v2/enrichment/person | Enrich a single person
 [**enrichment_status**](PublicEnrichmentApi.md#enrichment_status) | **GET** /api/v2/enrichment/status/{workflow_id} | Poll an enrichment workflow
 
+
+# **batch_companies_lookup**
+> BatchLookupResponse batch_companies_lookup(batch_companies_lookup_request)
+
+Look up a batch of companies
+
+Firmographics for up to 1,000 companies in one call.
+
+Each row is looked up like POST /enrichment/company and returned in
+`rows`; the companies found also form the `task_id` cohort, read back
+with GET /tasks/{task_id} (scope `companies:read`) and usable with
+/enrichment/by-task. Priced like a company cohort, about 1 credit per 10
+companies found; rows not found are not charged.
+
+**📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
+
+### Example
+
+* Bearer Authentication (HTTPBearer):
+
+```python
+import cleanlist_ai
+from cleanlist_ai.models.batch_companies_lookup_request import BatchCompaniesLookupRequest
+from cleanlist_ai.models.batch_lookup_response import BatchLookupResponse
+from cleanlist_ai.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://api.cleanlist.ai
+# See configuration.py for a list of all supported configuration parameters.
+configuration = cleanlist_ai.Configuration(
+    host = "https://api.cleanlist.ai"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: HTTPBearer
+configuration = cleanlist_ai.Configuration(
+    access_token = os.environ["BEARER_TOKEN"]
+)
+
+# Enter a context with an instance of the API client
+with cleanlist_ai.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = cleanlist_ai.PublicEnrichmentApi(api_client)
+    batch_companies_lookup_request = cleanlist_ai.BatchCompaniesLookupRequest() # BatchCompaniesLookupRequest | 
+
+    try:
+        # Look up a batch of companies
+        api_response = api_instance.batch_companies_lookup(batch_companies_lookup_request)
+        print("The response of PublicEnrichmentApi->batch_companies_lookup:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PublicEnrichmentApi->batch_companies_lookup: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **batch_companies_lookup_request** | [**BatchCompaniesLookupRequest**](BatchCompaniesLookupRequest.md)|  | 
+
+### Return type
+
+[**BatchLookupResponse**](BatchLookupResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **batch_people_lookup**
+> BatchLookupResponse batch_people_lookup(batch_people_lookup_request)
+
+Look up a batch of people
+
+Find email, phone and/or profile for up to 1,000 people in one call.
+
+Asynchronous: the usable rows start one bulk enrichment and the response
+returns its `task_id` at once. Read the rows back with
+GET /tasks/{task_id} (scope `people:read`): each row shows
+`enrichment_status` and, once done, the saved lead's values. Poll
+`poll_url` for progress; `enrichment.completed` fires when it ends. Bad
+rows come back in `rows` with a reason and are not charged.
+
+**📖 Docs:** https://docs.cleanlist.ai/api-reference/enrichment
+
+### Example
+
+* Bearer Authentication (HTTPBearer):
+
+```python
+import cleanlist_ai
+from cleanlist_ai.models.batch_lookup_response import BatchLookupResponse
+from cleanlist_ai.models.batch_people_lookup_request import BatchPeopleLookupRequest
+from cleanlist_ai.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://api.cleanlist.ai
+# See configuration.py for a list of all supported configuration parameters.
+configuration = cleanlist_ai.Configuration(
+    host = "https://api.cleanlist.ai"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: HTTPBearer
+configuration = cleanlist_ai.Configuration(
+    access_token = os.environ["BEARER_TOKEN"]
+)
+
+# Enter a context with an instance of the API client
+with cleanlist_ai.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = cleanlist_ai.PublicEnrichmentApi(api_client)
+    batch_people_lookup_request = cleanlist_ai.BatchPeopleLookupRequest() # BatchPeopleLookupRequest | 
+
+    try:
+        # Look up a batch of people
+        api_response = api_instance.batch_people_lookup(batch_people_lookup_request)
+        print("The response of PublicEnrichmentApi->batch_people_lookup:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PublicEnrichmentApi->batch_people_lookup: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **batch_people_lookup_request** | [**BatchPeopleLookupRequest**](BatchPeopleLookupRequest.md)|  | 
+
+### Return type
+
+[**BatchLookupResponse**](BatchLookupResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **enrich_by_task**
 > EnrichByTaskResponse enrich_by_task(enrich_by_task_request)
