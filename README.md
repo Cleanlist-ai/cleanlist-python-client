@@ -40,7 +40,10 @@ with Cleanlist(access_token="clapi_live_...") as cl:
   - [Enrichment](#enrichment-clenrichment)
   - [Smart Agents](#smart-agents-clsmart_agents)
   - [Export](#export-clexport)
+  - [Agents, plays, tasks, inbox, signals and webhooks](#agents-plays-tasks-inbox-signals-and-webhooks)
 - [Examples](#examples)
+- [Retries, idempotency and rate limits](#retries-idempotency-and-rate-limits)
+- [Verifying webhooks](#verifying-webhooks)
 - [Error handling](#error-handling)
 - [Pagination](#pagination)
 - [Using the generated API classes directly](#using-the-generated-api-classes-directly)
@@ -149,6 +152,7 @@ asyncio.run(main())
 | `access_token`  | `$CLEANLIST_API_KEY`       | Your API key. Sent as `Authorization: Bearer …`.                       |
 | `host`          | `https://api.cleanlist.ai` | API base URL. Use `http://localhost:8000` for local dev.               |
 | `configuration` | `None`                     | A pre-built `Configuration` for advanced needs (proxy, retries, etc.). |
+| `max_attempts`  | `3`                        | Tries per request, the first included. `1` turns retries off.          |
 
 For finer control, build a `Configuration` yourself:
 
@@ -227,9 +231,10 @@ See [`examples/`](examples/) for a complete, runnable polling helper (standard &
 
 ## Endpoint reference
 
-The v2 surface is 26 operations across six resource groups, exposed on the `Cleanlist`
+The v2 surface is 73 operations across 14 resource groups, exposed on the `Cleanlist`
 facade as `cl.workspace`, `cl.lead_lists`, `cl.people_finder`, `cl.enrichment`,
-`cl.smart_agents`, and `cl.export`. All examples below use the standard client; prepend `await` (and import from
+`cl.smart_agents`, `cl.export`, `cl.actions`, `cl.gtm_agents`, `cl.plays`, `cl.gtm_tasks`,
+`cl.inbox`, `cl.signals`, `cl.accounts_data` and `cl.webhooks`. All examples below use the standard client; prepend `await` (and import from
 `cleanlist_ai.aio…`) for async.
 
 Auto-generated, field-by-field docs for every model live in
@@ -400,6 +405,33 @@ for row in data.leads:
     print(row)
 ```
 
+### Agents, plays, tasks, inbox, signals and webhooks
+
+| Group | Methods |
+| ----- | ------- |
+| `cl.actions` | `list_actions()`, `call_action(name, ActionCall)`, `confirm_card(ConfirmCall)` |
+| `cl.gtm_agents` | `list_gtm_agents()`, `create_gtm_agent()`, `get_gtm_agent()`, `patch_gtm_agent()`, `set_gtm_agent_status()`, `run_gtm_agent()`, `list_gtm_agent_runs()`, `get_gtm_run()`, `list_gtm_run_records()` |
+| `cl.plays` | `list_plays()`, `run_play()`, `get_play_event()` |
+| `cl.gtm_tasks` | `list_gtm_tasks()`, `create_gtm_task()`, `get_gtm_task()`, `update_gtm_task()`, `list_updates()` |
+| `cl.inbox` | `list_inbox_threads()`, `read_inbox_thread()`, `update_inbox_thread()`, `reply_in_inbox_thread()` |
+| `cl.signals` | `search_job_postings()`, `list_job_changes()`, `check_job_changes()`, `company_signals()`, `search_linkedin_posts()`, `linkedin_post_engagers()`, `companies_by_technology()` |
+| `cl.accounts_data` | `buying_committee()`, `org_structure()`, `list_meetings()`, `read_meeting()` |
+| `cl.webhooks` | `list_webhooks()`, `create_webhook()`, `delete_webhook()`, `list_webhook_deliveries()` |
+| `cl.workspace` | `list_request_logs()` (`GET /api/v2/logs`) |
+| `cl.enrichment` | `batch_people_lookup()`, `batch_companies_lookup()` |
+
+Turning an agent on, running an agent and running a play spend credits and can email
+people or write to a CRM. Each call takes a `quote_id` from `cl.workspace.credits_estimate`
+(the quote lists the run's `effects` and `required_scopes`), and only starts with
+`commit=True`; without it you get a preview.
+
+```python
+from cleanlist_ai.models import EstimateCostRequest, RunGtmAgentBody
+
+quote = cl.workspace.credits_estimate(EstimateCostRequest(tool="run_gtm_agent", agent_id="ag_123"))
+run = cl.gtm_agents.run_gtm_agent("ag_123", RunGtmAgentBody(quote_id=quote.quote_id, commit=True))
+```
+
 ## Examples
 
 Runnable scripts live in [`examples/`](examples/) (setup notes in
@@ -417,6 +449,44 @@ Runnable scripts live in [`examples/`](examples/) (setup notes in
 | [`07_async_quickstart.py`](examples/07_async_quickstart.py) | The async client (`cleanlist_ai.aio`) end to end. | Free |
 | [`08_error_handling.py`](examples/08_error_handling.py) | Catching typed API exceptions. | Free |
 | [`09_find_people.py`](examples/09_find_people.py) | People Finder: filter values, compile preview, search + next page. | Free |
+
+## Retries, idempotency and rate limits
+
+GET, HEAD and OPTIONS are retried on network errors, 429 and 5xx, with backoff that honors
+`Retry-After` (a wait over a minute is returned to you instead). POST, PUT, PATCH and DELETE
+are retried only on a 429, a 503 `idempotency_unavailable`, or a network error with no
+response when the request carries an `Idempotency-Key`, because any other 5xx may mean the
+write already ran. `POST /api/v2/actions/confirm` and inbox replies are never retried.
+
+The client adds an `Idempotency-Key` to every write and keeps it the same across its
+retries. A replay of a stored response comes back with `Idempotent-Replayed: true`. To set
+your own:
+
+```python
+cl.lead_lists.create_list(CreateListRequest(name="Q3"), _headers={"Idempotency-Key": "order-1234"})
+```
+
+After any call, `cl.last_response` has the rate-limit headers and the mode:
+
+```python
+cl.last_response.rate_limit           # RateLimit(limit, remaining, reset); reset is unix seconds
+cl.last_response.idempotent_replayed  # True when the server replayed a stored response
+cl.mode                               # "test" for a clapi_test_ key's sandbox workspace, else "live"
+```
+
+`read_response_meta(err.status, err.headers)` reads the same values off an `ApiException`.
+
+## Verifying webhooks
+
+```python
+from cleanlist_ai import verify_webhook_signature
+
+# raw_body: the request body bytes exactly as received, not re-serialized JSON.
+if not verify_webhook_signature(raw_body, request.headers.get("Cleanlist-Signature"), secret):
+    return Response(status=400)
+```
+
+Signatures older than 5 minutes are refused (`tolerance_seconds=` changes that).
 
 ## Error handling
 

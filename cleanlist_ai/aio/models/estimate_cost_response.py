@@ -35,8 +35,10 @@ class EstimateCostResponse(BaseModel):
     filter_hash: StrictStr = Field(description="Stable digest of the canonical filter/list/cohort shape bound into the quote signature; `none` when there is no filter object.")
     available_credits: StrictInt = Field(description="The organization's current credit balance at estimate time.")
     sufficient: StrictBool = Field(description="True when `available_credits >= estimated_cost`. False signals the org must top up at billing before the operation can run.")
+    effects: Optional[List[StrictStr]] = None
+    required_scopes: Optional[List[StrictStr]] = None
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["crm_note", "quote_id", "expires_at", "estimated_cost", "tool", "row_count", "filter_hash", "available_credits", "sufficient"]
+    __properties: ClassVar[List[str]] = ["crm_note", "quote_id", "expires_at", "estimated_cost", "tool", "row_count", "filter_hash", "available_credits", "sufficient", "effects", "required_scopes"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -89,6 +91,16 @@ class EstimateCostResponse(BaseModel):
         if self.crm_note is None and "crm_note" in self.model_fields_set:
             _dict['crm_note'] = None
 
+        # set to None if effects (nullable) is None
+        # and model_fields_set contains the field
+        if self.effects is None and "effects" in self.model_fields_set:
+            _dict['effects'] = None
+
+        # set to None if required_scopes (nullable) is None
+        # and model_fields_set contains the field
+        if self.required_scopes is None and "required_scopes" in self.model_fields_set:
+            _dict['required_scopes'] = None
+
         return _dict
 
     @classmethod
@@ -109,7 +121,9 @@ class EstimateCostResponse(BaseModel):
             "row_count": obj.get("row_count"),
             "filter_hash": obj.get("filter_hash"),
             "available_credits": obj.get("available_credits"),
-            "sufficient": obj.get("sufficient")
+            "sufficient": obj.get("sufficient"),
+            "effects": obj.get("effects"),
+            "required_scopes": obj.get("required_scopes")
         })
         # store additional fields in additional_properties
         for _key in obj.keys():

@@ -7,6 +7,7 @@ Method | HTTP request | Description
 [**credits_balance**](PublicWorkspaceApi.md#credits_balance) | **GET** /api/v2/credits/balance | Get credit balance
 [**credits_estimate**](PublicWorkspaceApi.md#credits_estimate) | **POST** /api/v2/credits/estimate | Estimate cost &amp; get a signed quote
 [**list_api_keys**](PublicWorkspaceApi.md#list_api_keys) | **GET** /api/v2/api-keys | List API keys
+[**list_request_logs**](PublicWorkspaceApi.md#list_request_logs) | **GET** /api/v2/logs | List API requests
 [**usage_report**](PublicWorkspaceApi.md#usage_report) | **GET** /api/v2/usage | Get usage report
 [**whoami**](PublicWorkspaceApi.md#whoami) | **GET** /api/v2/whoami | Get current identity &amp; entitlements
 
@@ -286,6 +287,104 @@ This endpoint does not need any parameter.
 **500** | Internal error. |  -  |
 **502** | Upstream provider error. |  -  |
 **422** | Request failed validation. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **list_request_logs**
+> RequestLogsResponse list_request_logs(since=since, status=status, path=path, limit=limit, cursor=cursor)
+
+List API requests
+
+This workspace's API key and CLI requests, newest first: time,
+method, path, status, duration, route template, credits, key prefix and
+OAuth client. Page with `next_cursor`. Requires `admin:api_keys` and
+deducts no credits.
+
+### Example
+
+* Bearer Authentication (HTTPBearer):
+
+```python
+import cleanlist_ai
+from cleanlist_ai.models.request_logs_response import RequestLogsResponse
+from cleanlist_ai.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to https://api.cleanlist.ai
+# See configuration.py for a list of all supported configuration parameters.
+configuration = cleanlist_ai.Configuration(
+    host = "https://api.cleanlist.ai"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: HTTPBearer
+configuration = cleanlist_ai.Configuration(
+    access_token = os.environ["BEARER_TOKEN"]
+)
+
+# Enter a context with an instance of the API client
+with cleanlist_ai.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = cleanlist_ai.PublicWorkspaceApi(api_client)
+    since = '2013-10-20T19:20:30+01:00' # datetime | Only requests at or after this ISO 8601 time. (optional)
+    status = 'status_example' # str | An exact status code (429) or a class (4xx). (optional)
+    path = 'path_example' # str | Path prefix, matched against the raw path (/api/v2/lead-lists) or the route template (/lead-lists/{list_id}). (optional)
+    limit = 50 # int |  (optional) (default to 50)
+    cursor = 'cursor_example' # str | next_cursor from the previous page. (optional)
+
+    try:
+        # List API requests
+        api_response = api_instance.list_request_logs(since=since, status=status, path=path, limit=limit, cursor=cursor)
+        print("The response of PublicWorkspaceApi->list_request_logs:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling PublicWorkspaceApi->list_request_logs: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **since** | **datetime**| Only requests at or after this ISO 8601 time. | [optional] 
+ **status** | **str**| An exact status code (429) or a class (4xx). | [optional] 
+ **path** | **str**| Path prefix, matched against the raw path (/api/v2/lead-lists) or the route template (/lead-lists/{list_id}). | [optional] 
+ **limit** | **int**|  | [optional] [default to 50]
+ **cursor** | **str**| next_cursor from the previous page. | [optional] 
+
+### Return type
+
+[**RequestLogsResponse**](RequestLogsResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+**422** | Request failed validation. |  -  |
+**400** | Bad request. |  -  |
+**401** | Authentication required or invalid. |  -  |
+**403** | Permission denied or feature not enabled. |  -  |
+**404** | Resource not found. |  -  |
+**409** | Resource conflict. |  -  |
+**429** | Rate limited. |  -  |
+**500** | Internal error. |  -  |
+**502** | Upstream provider error. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

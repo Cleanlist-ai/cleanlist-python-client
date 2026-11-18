@@ -18,11 +18,19 @@ __version__ = "4.0.2"
 
 # Define package exports
 __all__ = [
+    "PublicAccountsDataApi",
+    "PublicActionsApi",
     "PublicEnrichmentApi",
     "PublicExportApi",
+    "PublicGTMAgentsApi",
+    "PublicGTMTasksApi",
+    "PublicInboxApi",
     "PublicLeadListsApi",
     "PublicPeopleFinderApi",
+    "PublicPlaysApi",
+    "PublicSignalsApi",
     "PublicSmartAgentsApi",
+    "PublicWebhooksApi",
     "PublicWorkspaceApi",
     "ApiResponse",
     "ApiClient",
@@ -33,28 +41,52 @@ __all__ = [
     "ApiKeyError",
     "ApiAttributeError",
     "ApiException",
+    "Action",
+    "ActionCall",
+    "ActionResult",
     "AddByCohort",
     "AddByLeadIds",
     "AddLeadsResponse",
+    "AgentDto",
     "ApiKeyInfo",
     "ApiKeysResponse",
+    "BatchCompaniesLookupRequest",
+    "BatchLookupResponse",
+    "BatchPeopleLookupRequest",
+    "BatchRow",
     "Body",
+    "BuiltFromDto",
     "BulkContactResult",
+    "BuyingCommitteeBody",
+    "Card",
     "CohortSummary",
     "CompaniesFindStartResponse",
     "CompaniesFindStatusResponse",
     "CompanyRecord",
     "CompanySearchCriteria",
+    "CompanySignalsRequest",
     "CompileRequest",
     "CompileResponse",
+    "ConfirmCall",
+    "ConfirmResult",
+    "ConnectionDto",
+    "CreateGtmAgentBody",
     "CreateListRequest",
+    "CreateTaskBody",
+    "CreateWebhookRequest",
+    "CreatedWebhook",
     "CreditsBalanceResponse",
     "CrmFilterClause",
     "CrmFilterSections",
     "CsvImportRequest",
     "CsvImportResponse",
     "CurrentRoleEvidence",
+    "DailySummaryDto",
     "DeleteListResponse",
+    "DeletedWebhook",
+    "DeliveryDataDto",
+    "DeliveryDto",
+    "DeliveryMessagesDto",
     "EnrichByTaskEntityResult",
     "EnrichByTaskRequest",
     "EnrichByTaskResponse",
@@ -73,14 +105,25 @@ __all__ = [
     "FindPeopleRequest",
     "FindPeopleResponse",
     "FindPeopleStatusResponse",
+    "FrontierEntryDto",
     "GeoRadius",
+    "Group",
+    "GtmAgentStatusBody",
     "HTTPValidationError",
+    "JobChangeCheckRequest",
+    "JobSearchRequest",
+    "KnowledgeDto",
     "LeadRow",
     "LeadsPageResponse",
+    "LimitsDto",
     "ListDetailResponse",
     "ListSmartAgentsResponse",
     "ListSummary",
     "ListsPageResponse",
+    "LivePreview",
+    "Manifest",
+    "NodeStatsDto",
+    "PatchGtmAgentBody",
     "PendingImportRow",
     "PeopleByCompaniesRequest",
     "PeopleFiltersResponse",
@@ -90,37 +133,74 @@ __all__ = [
     "PeopleSearchResponse",
     "PeopleSearchResultRow",
     "PersonPresentationRow",
+    "PersonRefDto",
+    "Persona",
+    "PlayDto",
+    "PlayEventDto",
+    "PlayGapDto",
+    "PlayInput",
+    "PostEngagersBody",
+    "PostSearchBody",
     "PresentationLink",
     "PublicApiError",
     "PublicApiErrorPayload",
     "PublicLeadListUpdate",
     "RawPersonStatus",
+    "RecordsPageDto",
     "RemoveLeadsRequest",
     "RemoveLeadsResponse",
+    "ReplyBody",
+    "RequestLogRow",
+    "RequestLogsResponse",
+    "ResponseRunGtmAgentApiV2GtmAgentsAgentIdRunsPost",
+    "ResponseRunPlayApiV2PlaysPlaybookIdRunsPost",
+    "ResponseSetGtmAgentStatusApiV2GtmAgentsAgentIdStatusPost",
+    "RunDetailDto",
+    "RunGtmAgentBody",
+    "RunPlayBody",
+    "RunPlayResponse",
+    "RunRecordDto",
     "RunSmartAgentRequest",
     "RunSmartAgentResponse",
+    "RunSummaryDto",
     "SearchHandoff",
     "SearchPresentation",
+    "SettingsIssueDto",
     "SingleEnrichmentResultRead",
+    "SkillRefDto",
     "SmartAgentResultRow",
     "SmartAgentResultsResponse",
     "SmartAgentRun",
     "SuggestedAction",
+    "TechnologyBody",
+    "TriggerDto",
+    "UpdateTaskBody",
+    "UpdateThreadBody",
     "UsageGroupRow",
     "UsageReportResponse",
     "ValidationError",
     "ValidationErrorLocInner",
+    "WebhookRecord",
+    "WebhooksResponse",
     "WhoamiResponse",
     "WorkflowStatusResponse",
     "WorkforceRule",
 ]
 
 # import apis into sdk package
+from cleanlist_ai.api.public_accounts_data_api import PublicAccountsDataApi as PublicAccountsDataApi
+from cleanlist_ai.api.public_actions_api import PublicActionsApi as PublicActionsApi
 from cleanlist_ai.api.public_enrichment_api import PublicEnrichmentApi as PublicEnrichmentApi
 from cleanlist_ai.api.public_export_api import PublicExportApi as PublicExportApi
+from cleanlist_ai.api.public_gtm_agents_api import PublicGTMAgentsApi as PublicGTMAgentsApi
+from cleanlist_ai.api.public_gtm_tasks_api import PublicGTMTasksApi as PublicGTMTasksApi
+from cleanlist_ai.api.public_inbox_api import PublicInboxApi as PublicInboxApi
 from cleanlist_ai.api.public_lead_lists_api import PublicLeadListsApi as PublicLeadListsApi
 from cleanlist_ai.api.public_people_finder_api import PublicPeopleFinderApi as PublicPeopleFinderApi
+from cleanlist_ai.api.public_plays_api import PublicPlaysApi as PublicPlaysApi
+from cleanlist_ai.api.public_signals_api import PublicSignalsApi as PublicSignalsApi
 from cleanlist_ai.api.public_smart_agents_api import PublicSmartAgentsApi as PublicSmartAgentsApi
+from cleanlist_ai.api.public_webhooks_api import PublicWebhooksApi as PublicWebhooksApi
 from cleanlist_ai.api.public_workspace_api import PublicWorkspaceApi as PublicWorkspaceApi
 
 # import ApiClient
@@ -135,28 +215,52 @@ from cleanlist_ai.exceptions import ApiAttributeError as ApiAttributeError
 from cleanlist_ai.exceptions import ApiException as ApiException
 
 # import models into sdk package
+from cleanlist_ai.models.action import Action as Action
+from cleanlist_ai.models.action_call import ActionCall as ActionCall
+from cleanlist_ai.models.action_result import ActionResult as ActionResult
 from cleanlist_ai.models.add_by_cohort import AddByCohort as AddByCohort
 from cleanlist_ai.models.add_by_lead_ids import AddByLeadIds as AddByLeadIds
 from cleanlist_ai.models.add_leads_response import AddLeadsResponse as AddLeadsResponse
+from cleanlist_ai.models.agent_dto import AgentDto as AgentDto
 from cleanlist_ai.models.api_key_info import ApiKeyInfo as ApiKeyInfo
 from cleanlist_ai.models.api_keys_response import ApiKeysResponse as ApiKeysResponse
+from cleanlist_ai.models.batch_companies_lookup_request import BatchCompaniesLookupRequest as BatchCompaniesLookupRequest
+from cleanlist_ai.models.batch_lookup_response import BatchLookupResponse as BatchLookupResponse
+from cleanlist_ai.models.batch_people_lookup_request import BatchPeopleLookupRequest as BatchPeopleLookupRequest
+from cleanlist_ai.models.batch_row import BatchRow as BatchRow
 from cleanlist_ai.models.body import Body as Body
+from cleanlist_ai.models.built_from_dto import BuiltFromDto as BuiltFromDto
 from cleanlist_ai.models.bulk_contact_result import BulkContactResult as BulkContactResult
+from cleanlist_ai.models.buying_committee_body import BuyingCommitteeBody as BuyingCommitteeBody
+from cleanlist_ai.models.card import Card as Card
 from cleanlist_ai.models.cohort_summary import CohortSummary as CohortSummary
 from cleanlist_ai.models.companies_find_start_response import CompaniesFindStartResponse as CompaniesFindStartResponse
 from cleanlist_ai.models.companies_find_status_response import CompaniesFindStatusResponse as CompaniesFindStatusResponse
 from cleanlist_ai.models.company_record import CompanyRecord as CompanyRecord
 from cleanlist_ai.models.company_search_criteria import CompanySearchCriteria as CompanySearchCriteria
+from cleanlist_ai.models.company_signals_request import CompanySignalsRequest as CompanySignalsRequest
 from cleanlist_ai.models.compile_request import CompileRequest as CompileRequest
 from cleanlist_ai.models.compile_response import CompileResponse as CompileResponse
+from cleanlist_ai.models.confirm_call import ConfirmCall as ConfirmCall
+from cleanlist_ai.models.confirm_result import ConfirmResult as ConfirmResult
+from cleanlist_ai.models.connection_dto import ConnectionDto as ConnectionDto
+from cleanlist_ai.models.create_gtm_agent_body import CreateGtmAgentBody as CreateGtmAgentBody
 from cleanlist_ai.models.create_list_request import CreateListRequest as CreateListRequest
+from cleanlist_ai.models.create_task_body import CreateTaskBody as CreateTaskBody
+from cleanlist_ai.models.create_webhook_request import CreateWebhookRequest as CreateWebhookRequest
+from cleanlist_ai.models.created_webhook import CreatedWebhook as CreatedWebhook
 from cleanlist_ai.models.credits_balance_response import CreditsBalanceResponse as CreditsBalanceResponse
 from cleanlist_ai.models.crm_filter_clause import CrmFilterClause as CrmFilterClause
 from cleanlist_ai.models.crm_filter_sections import CrmFilterSections as CrmFilterSections
 from cleanlist_ai.models.csv_import_request import CsvImportRequest as CsvImportRequest
 from cleanlist_ai.models.csv_import_response import CsvImportResponse as CsvImportResponse
 from cleanlist_ai.models.current_role_evidence import CurrentRoleEvidence as CurrentRoleEvidence
+from cleanlist_ai.models.daily_summary_dto import DailySummaryDto as DailySummaryDto
 from cleanlist_ai.models.delete_list_response import DeleteListResponse as DeleteListResponse
+from cleanlist_ai.models.deleted_webhook import DeletedWebhook as DeletedWebhook
+from cleanlist_ai.models.delivery_data_dto import DeliveryDataDto as DeliveryDataDto
+from cleanlist_ai.models.delivery_dto import DeliveryDto as DeliveryDto
+from cleanlist_ai.models.delivery_messages_dto import DeliveryMessagesDto as DeliveryMessagesDto
 from cleanlist_ai.models.enrich_by_task_entity_result import EnrichByTaskEntityResult as EnrichByTaskEntityResult
 from cleanlist_ai.models.enrich_by_task_request import EnrichByTaskRequest as EnrichByTaskRequest
 from cleanlist_ai.models.enrich_by_task_response import EnrichByTaskResponse as EnrichByTaskResponse
@@ -175,14 +279,25 @@ from cleanlist_ai.models.filter_option import FilterOption as FilterOption
 from cleanlist_ai.models.find_people_request import FindPeopleRequest as FindPeopleRequest
 from cleanlist_ai.models.find_people_response import FindPeopleResponse as FindPeopleResponse
 from cleanlist_ai.models.find_people_status_response import FindPeopleStatusResponse as FindPeopleStatusResponse
+from cleanlist_ai.models.frontier_entry_dto import FrontierEntryDto as FrontierEntryDto
 from cleanlist_ai.models.geo_radius import GeoRadius as GeoRadius
+from cleanlist_ai.models.group import Group as Group
+from cleanlist_ai.models.gtm_agent_status_body import GtmAgentStatusBody as GtmAgentStatusBody
 from cleanlist_ai.models.http_validation_error import HTTPValidationError as HTTPValidationError
+from cleanlist_ai.models.job_change_check_request import JobChangeCheckRequest as JobChangeCheckRequest
+from cleanlist_ai.models.job_search_request import JobSearchRequest as JobSearchRequest
+from cleanlist_ai.models.knowledge_dto import KnowledgeDto as KnowledgeDto
 from cleanlist_ai.models.lead_row import LeadRow as LeadRow
 from cleanlist_ai.models.leads_page_response import LeadsPageResponse as LeadsPageResponse
+from cleanlist_ai.models.limits_dto import LimitsDto as LimitsDto
 from cleanlist_ai.models.list_detail_response import ListDetailResponse as ListDetailResponse
 from cleanlist_ai.models.list_smart_agents_response import ListSmartAgentsResponse as ListSmartAgentsResponse
 from cleanlist_ai.models.list_summary import ListSummary as ListSummary
 from cleanlist_ai.models.lists_page_response import ListsPageResponse as ListsPageResponse
+from cleanlist_ai.models.live_preview import LivePreview as LivePreview
+from cleanlist_ai.models.manifest import Manifest as Manifest
+from cleanlist_ai.models.node_stats_dto import NodeStatsDto as NodeStatsDto
+from cleanlist_ai.models.patch_gtm_agent_body import PatchGtmAgentBody as PatchGtmAgentBody
 from cleanlist_ai.models.pending_import_row import PendingImportRow as PendingImportRow
 from cleanlist_ai.models.people_by_companies_request import PeopleByCompaniesRequest as PeopleByCompaniesRequest
 from cleanlist_ai.models.people_filters_response import PeopleFiltersResponse as PeopleFiltersResponse
@@ -192,26 +307,55 @@ from cleanlist_ai.models.people_search_request import PeopleSearchRequest as Peo
 from cleanlist_ai.models.people_search_response import PeopleSearchResponse as PeopleSearchResponse
 from cleanlist_ai.models.people_search_result_row import PeopleSearchResultRow as PeopleSearchResultRow
 from cleanlist_ai.models.person_presentation_row import PersonPresentationRow as PersonPresentationRow
+from cleanlist_ai.models.person_ref_dto import PersonRefDto as PersonRefDto
+from cleanlist_ai.models.persona import Persona as Persona
+from cleanlist_ai.models.play_dto import PlayDto as PlayDto
+from cleanlist_ai.models.play_event_dto import PlayEventDto as PlayEventDto
+from cleanlist_ai.models.play_gap_dto import PlayGapDto as PlayGapDto
+from cleanlist_ai.models.play_input import PlayInput as PlayInput
+from cleanlist_ai.models.post_engagers_body import PostEngagersBody as PostEngagersBody
+from cleanlist_ai.models.post_search_body import PostSearchBody as PostSearchBody
 from cleanlist_ai.models.presentation_link import PresentationLink as PresentationLink
 from cleanlist_ai.models.public_api_error import PublicApiError as PublicApiError
 from cleanlist_ai.models.public_api_error_payload import PublicApiErrorPayload as PublicApiErrorPayload
 from cleanlist_ai.models.public_lead_list_update import PublicLeadListUpdate as PublicLeadListUpdate
 from cleanlist_ai.models.raw_person_status import RawPersonStatus as RawPersonStatus
+from cleanlist_ai.models.records_page_dto import RecordsPageDto as RecordsPageDto
 from cleanlist_ai.models.remove_leads_request import RemoveLeadsRequest as RemoveLeadsRequest
 from cleanlist_ai.models.remove_leads_response import RemoveLeadsResponse as RemoveLeadsResponse
+from cleanlist_ai.models.reply_body import ReplyBody as ReplyBody
+from cleanlist_ai.models.request_log_row import RequestLogRow as RequestLogRow
+from cleanlist_ai.models.request_logs_response import RequestLogsResponse as RequestLogsResponse
+from cleanlist_ai.models.response_run_gtm_agent_api_v2_gtm_agents_agent_id_runs_post import ResponseRunGtmAgentApiV2GtmAgentsAgentIdRunsPost as ResponseRunGtmAgentApiV2GtmAgentsAgentIdRunsPost
+from cleanlist_ai.models.response_run_play_api_v2_plays_playbook_id_runs_post import ResponseRunPlayApiV2PlaysPlaybookIdRunsPost as ResponseRunPlayApiV2PlaysPlaybookIdRunsPost
+from cleanlist_ai.models.response_set_gtm_agent_status_api_v2_gtm_agents_agent_id_status_post import ResponseSetGtmAgentStatusApiV2GtmAgentsAgentIdStatusPost as ResponseSetGtmAgentStatusApiV2GtmAgentsAgentIdStatusPost
+from cleanlist_ai.models.run_detail_dto import RunDetailDto as RunDetailDto
+from cleanlist_ai.models.run_gtm_agent_body import RunGtmAgentBody as RunGtmAgentBody
+from cleanlist_ai.models.run_play_body import RunPlayBody as RunPlayBody
+from cleanlist_ai.models.run_play_response import RunPlayResponse as RunPlayResponse
+from cleanlist_ai.models.run_record_dto import RunRecordDto as RunRecordDto
 from cleanlist_ai.models.run_smart_agent_request import RunSmartAgentRequest as RunSmartAgentRequest
 from cleanlist_ai.models.run_smart_agent_response import RunSmartAgentResponse as RunSmartAgentResponse
+from cleanlist_ai.models.run_summary_dto import RunSummaryDto as RunSummaryDto
 from cleanlist_ai.models.search_handoff import SearchHandoff as SearchHandoff
 from cleanlist_ai.models.search_presentation import SearchPresentation as SearchPresentation
+from cleanlist_ai.models.settings_issue_dto import SettingsIssueDto as SettingsIssueDto
 from cleanlist_ai.models.single_enrichment_result_read import SingleEnrichmentResultRead as SingleEnrichmentResultRead
+from cleanlist_ai.models.skill_ref_dto import SkillRefDto as SkillRefDto
 from cleanlist_ai.models.smart_agent_result_row import SmartAgentResultRow as SmartAgentResultRow
 from cleanlist_ai.models.smart_agent_results_response import SmartAgentResultsResponse as SmartAgentResultsResponse
 from cleanlist_ai.models.smart_agent_run import SmartAgentRun as SmartAgentRun
 from cleanlist_ai.models.suggested_action import SuggestedAction as SuggestedAction
+from cleanlist_ai.models.technology_body import TechnologyBody as TechnologyBody
+from cleanlist_ai.models.trigger_dto import TriggerDto as TriggerDto
+from cleanlist_ai.models.update_task_body import UpdateTaskBody as UpdateTaskBody
+from cleanlist_ai.models.update_thread_body import UpdateThreadBody as UpdateThreadBody
 from cleanlist_ai.models.usage_group_row import UsageGroupRow as UsageGroupRow
 from cleanlist_ai.models.usage_report_response import UsageReportResponse as UsageReportResponse
 from cleanlist_ai.models.validation_error import ValidationError as ValidationError
 from cleanlist_ai.models.validation_error_loc_inner import ValidationErrorLocInner as ValidationErrorLocInner
+from cleanlist_ai.models.webhook_record import WebhookRecord as WebhookRecord
+from cleanlist_ai.models.webhooks_response import WebhooksResponse as WebhooksResponse
 from cleanlist_ai.models.whoami_response import WhoamiResponse as WhoamiResponse
 from cleanlist_ai.models.workflow_status_response import WorkflowStatusResponse as WorkflowStatusResponse
 from cleanlist_ai.models.workforce_rule import WorkforceRule as WorkforceRule
@@ -220,3 +364,6 @@ from cleanlist_ai.models.workforce_rule import WorkforceRule as WorkforceRule
 # --- Cleanlist convenience facade (appended by scripts/generate.sh) ---
 from cleanlist_ai.client import Cleanlist as Cleanlist
 __all__.append("Cleanlist")
+from cleanlist_ai.retry import RateLimit as RateLimit, ResponseMeta as ResponseMeta, read_response_meta as read_response_meta
+from cleanlist_ai.webhooks import verify_webhook_signature as verify_webhook_signature
+__all__.extend(["RateLimit", "ResponseMeta", "read_response_meta", "verify_webhook_signature"])

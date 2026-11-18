@@ -42,8 +42,9 @@ class WhoamiResponse(BaseModel):
     appsumo_tier: Optional[StrictInt] = None
     features: List[Optional[StrictStr]] = Field(description="EFFECTIVE feature grants the gates actually enforce: base Stripe tier ∪ AppSumo carve-outs − AppSumo blocks (via `has_feature_effective`). Sourced from the same function the server-side gate uses so the advertised list and the gate can't drift. Sorted alphabetically for stable diffs.")
     acting_staff_email: Optional[StrictStr] = None
+    mode: Optional[StrictStr] = Field(default='live', description="`test` for a `clapi_test_` key, which runs in the workspace's sandbox: search answers from fixtures, and calls that would spend real money, send, or write to a CRM are refused with `test_mode_unsupported`. Every test response also carries `Cleanlist-Mode: test`.")
     additional_properties: Dict[str, Any] = {}
-    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "user_email", "user_id", "user_name", "organization_id", "organization_name", "auth_type", "scopes", "tier", "appsumo_tier", "features", "acting_staff_email"]
+    __properties: ClassVar[List[str]] = ["task_id", "timestamp_ms", "agent_instructions", "usage", "message", "user_email", "user_id", "user_name", "organization_id", "organization_name", "auth_type", "scopes", "tier", "appsumo_tier", "features", "acting_staff_email", "mode"]
 
     @field_validator('auth_type')
     def auth_type_validate_enum(cls, value):
@@ -57,6 +58,16 @@ class WhoamiResponse(BaseModel):
         """Validates the enum"""
         if value not in set(['free', 'starter', 'pro', 'enterprise']):
             raise ValueError("must be one of enum values ('free', 'starter', 'pro', 'enterprise')")
+        return value
+
+    @field_validator('mode')
+    def mode_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['live', 'test']):
+            raise ValueError("must be one of enum values ('live', 'test')")
         return value
 
     model_config = ConfigDict(
@@ -187,7 +198,8 @@ class WhoamiResponse(BaseModel):
             "tier": obj.get("tier"),
             "appsumo_tier": obj.get("appsumo_tier"),
             "features": obj.get("features"),
-            "acting_staff_email": obj.get("acting_staff_email")
+            "acting_staff_email": obj.get("acting_staff_email"),
+            "mode": obj.get("mode") if obj.get("mode") is not None else 'live'
         })
         # store additional fields in additional_properties
         for _key in obj.keys():
