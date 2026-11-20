@@ -1591,7 +1591,7 @@ class PublicSignalsApi:
     ) -> object:
         """Search Job Postings
 
-        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.03 credits a posting returned; quote first.
+        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.1 credits a posting returned; quote first.
 
         :param job_search_request: (required)
         :type job_search_request: JobSearchRequest
@@ -1667,7 +1667,7 @@ class PublicSignalsApi:
     ) -> ApiResponse[object]:
         """Search Job Postings
 
-        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.03 credits a posting returned; quote first.
+        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.1 credits a posting returned; quote first.
 
         :param job_search_request: (required)
         :type job_search_request: JobSearchRequest
@@ -1743,7 +1743,7 @@ class PublicSignalsApi:
     ) -> RESTResponseType:
         """Search Job Postings
 
-        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.03 credits a posting returned; quote first.
+        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.1 credits a posting returned; quote first.
 
         :param job_search_request: (required)
         :type job_search_request: JobSearchRequest

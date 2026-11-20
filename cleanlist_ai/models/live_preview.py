@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -36,16 +36,6 @@ class LivePreview(BaseModel):
     missing_scopes: List[StrictStr] = Field(description="Those this credential lacks; empty on the MCP.")
     estimate: Dict[str, Any] = Field(description="The POST /credits/estimate body that quotes it.")
     __properties: ClassVar[List[str]] = ["committed", "action", "description", "credits_max", "records_max", "effects", "required_scopes", "missing_scopes", "estimate"]
-
-    @field_validator('committed')
-    def committed_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['false']):
-            raise ValueError("must be one of enum values ('false')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

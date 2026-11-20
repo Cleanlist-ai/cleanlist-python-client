@@ -258,7 +258,7 @@ Leads by public_identifier / prospect_id (existing behavior).
 Net effect: no duplicate Lead, but the RawPerson stub persists
 until the workflow processes it.
 
-Send the file as base64 in `csv_content_base64` (≤150 KB / ~600 rows)
+Send the file as base64 in `csv_content_base64` (≤10 MB / 20,000 rows)
 with a `column_mapping` from canonical field to CSV header. Requires the
 `lists:write` scope, plus `enrich:write` when `dispatch_enrichment=true`
 (the enrichment spend). Importing rows is free; when dispatching,

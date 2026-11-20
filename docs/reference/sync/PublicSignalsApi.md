@@ -467,7 +467,7 @@ Name | Type | Description  | Notes
 Search Job Postings
 
 Recent job postings, newest first: the read the "Companies start
-hiring" trigger makes. 0.03 credits a posting returned; quote first.
+hiring" trigger makes. 0.1 credits a posting returned; quote first.
 
 ### Example
 
