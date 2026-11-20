@@ -26,7 +26,7 @@ class CsvImportRequest(BaseModel):
     """
     CsvImportRequest
     """ # noqa: E501
-    csv_content_base64: StrictStr = Field(description="Full CSV file body, base64-encoded. UTF-8 (with or without BOM). v1 hard-caps the raw body at 150 KB / ~600 rows — past that the base64 payload starts hitting tool-call output limits in the agent before any server cap fires. Above the cap the endpoint returns 413; chunk the file upstream.")
+    csv_content_base64: StrictStr = Field(description="Full CSV file body, base64-encoded. UTF-8 (with or without BOM). Up to 10 MB of raw CSV and 20,000 rows per call. Above 10 MB the endpoint returns 413; rows past 20,000 are skipped with reason `row_cap_exceeded`. An agent sending the file in a tool call may need smaller chunks to stay within its own output limit.")
     column_mapping: Dict[str, Optional[StrictStr]] = Field(description="{ canonical_field: csv_header_name }. The MCP agent reads the CSV header line and supplies the mapping; the server never guesses. CSV columns not mapped are dropped. Mapping a field that isn't in the CSV header returns 400 missing_column with the bad header name in `details`.")
     dispatch_enrichment: Optional[StrictBool] = Field(default=True, description="When True (default), the import dispatches a BulkEnrichmentWorkflow immediately after the RawPeople rows land. When False, rows land as RawPerson(status=pending) and the caller dispatches enrichment separately via enrich_list.")
     enrichment_type: Optional[StrictStr] = None

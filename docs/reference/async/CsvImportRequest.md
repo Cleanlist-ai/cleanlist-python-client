@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**csv_content_base64** | **str** | Full CSV file body, base64-encoded. UTF-8 (with or without BOM). v1 hard-caps the raw body at 150 KB / ~600 rows — past that the base64 payload starts hitting tool-call output limits in the agent before any server cap fires. Above the cap the endpoint returns 413; chunk the file upstream. | 
+**csv_content_base64** | **str** | Full CSV file body, base64-encoded. UTF-8 (with or without BOM). Up to 10 MB of raw CSV and 20,000 rows per call. Above 10 MB the endpoint returns 413; rows past 20,000 are skipped with reason &#x60;row_cap_exceeded&#x60;. An agent sending the file in a tool call may need smaller chunks to stay within its own output limit. | 
 **column_mapping** | **Dict[str, Optional[str]]** | { canonical_field: csv_header_name }. The MCP agent reads the CSV header line and supplies the mapping; the server never guesses. CSV columns not mapped are dropped. Mapping a field that isn&#39;t in the CSV header returns 400 missing_column with the bad header name in &#x60;details&#x60;. | 
 **dispatch_enrichment** | **bool** | When True (default), the import dispatches a BulkEnrichmentWorkflow immediately after the RawPeople rows land. When False, rows land as RawPerson(status&#x3D;pending) and the caller dispatches enrichment separately via enrich_list. | [optional] [default to True]
 **enrichment_type** | **str** |  | [optional] 

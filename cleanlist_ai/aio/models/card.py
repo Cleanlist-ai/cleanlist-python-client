@@ -31,7 +31,8 @@ class Card(BaseModel):
     summary: StrictStr
     credits_required: Optional[Union[StrictFloat, StrictInt]] = None
     expires_at: StrictStr
-    __properties: ClassVar[List[str]] = ["card_id", "title", "summary", "credits_required", "expires_at"]
+    effects: Optional[List[StrictStr]] = None
+    __properties: ClassVar[List[str]] = ["card_id", "title", "summary", "credits_required", "expires_at", "effects"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -77,6 +78,11 @@ class Card(BaseModel):
         if self.credits_required is None and "credits_required" in self.model_fields_set:
             _dict['credits_required'] = None
 
+        # set to None if effects (nullable) is None
+        # and model_fields_set contains the field
+        if self.effects is None and "effects" in self.model_fields_set:
+            _dict['effects'] = None
+
         return _dict
 
     @classmethod
@@ -93,7 +99,8 @@ class Card(BaseModel):
             "title": obj.get("title"),
             "summary": obj.get("summary"),
             "credits_required": obj.get("credits_required"),
-            "expires_at": obj.get("expires_at")
+            "expires_at": obj.get("expires_at"),
+            "effects": obj.get("effects")
         })
         return _obj
 

@@ -30,7 +30,7 @@ class UpdateTaskBody(BaseModel):
     status: StrictStr
     outcome: Optional[Annotated[str, Field(strict=True, max_length=120)]] = ''
     note: Optional[Annotated[str, Field(strict=True, max_length=10000)]] = ''
-    commit: Optional[StrictBool] = Field(default=False, description="Needed when the change writes to the CRM; without it that call answers with a preview.")
+    commit: Optional[StrictBool] = Field(default=False, description="Needed when the change writes to the CRM, or completes a sequence step's task (its sequence moves on); without it that call answers with a preview.")
     __properties: ClassVar[List[str]] = ["status", "outcome", "note", "commit"]
 
     @field_validator('status')

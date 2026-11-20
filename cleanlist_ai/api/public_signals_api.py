@@ -63,7 +63,7 @@ class PublicSignalsApi:
     ) -> object:
         """Check Job Changes
 
-        Where these people work now, from their LinkedIn profiles: the read the Job history step makes. Every person named, up to 500; quote first.
+        Where these people work now, from their LinkedIn profiles: the read the Job history step makes. Every person named, up to 500; quote first. A retry with the same quote_id within an hour returns the first result (``replayed: true``) and charges nothing more.
 
         :param job_change_check_request: (required)
         :type job_change_check_request: JobChangeCheckRequest
@@ -139,7 +139,7 @@ class PublicSignalsApi:
     ) -> ApiResponse[object]:
         """Check Job Changes
 
-        Where these people work now, from their LinkedIn profiles: the read the Job history step makes. Every person named, up to 500; quote first.
+        Where these people work now, from their LinkedIn profiles: the read the Job history step makes. Every person named, up to 500; quote first. A retry with the same quote_id within an hour returns the first result (``replayed: true``) and charges nothing more.
 
         :param job_change_check_request: (required)
         :type job_change_check_request: JobChangeCheckRequest
@@ -215,7 +215,7 @@ class PublicSignalsApi:
     ) -> RESTResponseType:
         """Check Job Changes
 
-        Where these people work now, from their LinkedIn profiles: the read the Job history step makes. Every person named, up to 500; quote first.
+        Where these people work now, from their LinkedIn profiles: the read the Job history step makes. Every person named, up to 500; quote first. A retry with the same quote_id within an hour returns the first result (``replayed: true``) and charges nothing more.
 
         :param job_change_check_request: (required)
         :type job_change_check_request: JobChangeCheckRequest
@@ -1591,7 +1591,7 @@ class PublicSignalsApi:
     ) -> object:
         """Search Job Postings
 
-        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.03 credits a posting returned; quote first.
+        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.1 credits a posting returned; quote first.
 
         :param job_search_request: (required)
         :type job_search_request: JobSearchRequest
@@ -1667,7 +1667,7 @@ class PublicSignalsApi:
     ) -> ApiResponse[object]:
         """Search Job Postings
 
-        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.03 credits a posting returned; quote first.
+        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.1 credits a posting returned; quote first.
 
         :param job_search_request: (required)
         :type job_search_request: JobSearchRequest
@@ -1743,7 +1743,7 @@ class PublicSignalsApi:
     ) -> RESTResponseType:
         """Search Job Postings
 
-        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.03 credits a posting returned; quote first.
+        Recent job postings, newest first: the read the \"Companies start hiring\" trigger makes. 0.1 credits a posting returned; quote first.
 
         :param job_search_request: (required)
         :type job_search_request: JobSearchRequest

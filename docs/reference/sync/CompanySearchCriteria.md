@@ -41,6 +41,7 @@ Name | Type | Description | Notes
 **growth3m_min** | **str** | Minimum three-month employee growth percent. | [optional] [default to '']
 **growth12m_min** | **str** | Minimum twelve-month employee growth percent. | [optional] [default to '']
 **followers_min** | **str** | Minimum LinkedIn follower count. | [optional] [default to '']
+**followers_max** | **str** | Maximum LinkedIn follower count. | [optional] [default to '']
 **followers_growth6m_min** | **str** | Minimum six-month follower growth percent. | [optional] [default to '']
 **followers_growth12m_min** | **str** | Minimum twelve-month follower growth percent. | [optional] [default to '']
 **last_funding_date_after** | **str** | Last funding date floor as YYYY-MM-DD. | [optional] [default to '']

@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **summary** | **str** |  | 
 **credits_required** | **float** |  | [optional] 
 **expires_at** | **str** |  | 
+**effects** | **List[str]** |  | [optional] 
 
 ## Example
 
