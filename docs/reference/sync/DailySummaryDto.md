@@ -7,6 +7,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **hour** | **int** |  | 
 **timezone** | **str** |  | 
+**report** | **object** |  | [optional] 
 
 ## Example
 
