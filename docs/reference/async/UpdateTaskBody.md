@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **status** | **str** |  | 
 **outcome** | **str** |  | [optional] [default to '']
 **note** | **str** |  | [optional] [default to '']
-**commit** | **bool** | Needed when the change writes to the CRM; without it that call answers with a preview. | [optional] [default to False]
+**commit** | **bool** | Needed when the change writes to the CRM, or completes a sequence step&#39;s task (its sequence moves on); without it that call answers with a preview. | [optional] [default to False]
 
 ## Example
 

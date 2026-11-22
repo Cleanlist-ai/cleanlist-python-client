@@ -20,6 +20,8 @@ Check Job Changes
 
 Where these people work now, from their LinkedIn profiles: the read
 the Job history step makes. Every person named, up to 500; quote first.
+A retry with the same quote_id within an hour returns the first result
+(``replayed: true``) and charges nothing more.
 
 ### Example
 
@@ -465,7 +467,7 @@ Name | Type | Description  | Notes
 Search Job Postings
 
 Recent job postings, newest first: the read the "Companies start
-hiring" trigger makes. 0.03 credits a posting returned; quote first.
+hiring" trigger makes. 0.1 credits a posting returned; quote first.
 
 ### Example
 
