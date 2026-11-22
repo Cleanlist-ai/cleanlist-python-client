@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -28,7 +28,8 @@ class DailySummaryDto(BaseModel):
     """ # noqa: E501
     hour: StrictInt
     timezone: StrictStr
-    __properties: ClassVar[List[str]] = ["hour", "timezone"]
+    report: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["hour", "timezone", "report"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -69,6 +70,11 @@ class DailySummaryDto(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # set to None if report (nullable) is None
+        # and model_fields_set contains the field
+        if self.report is None and "report" in self.model_fields_set:
+            _dict['report'] = None
+
         return _dict
 
     @classmethod
@@ -82,7 +88,8 @@ class DailySummaryDto(BaseModel):
 
         _obj = cls.model_validate({
             "hour": obj.get("hour"),
-            "timezone": obj.get("timezone")
+            "timezone": obj.get("timezone"),
+            "report": obj.get("report")
         })
         return _obj
 
